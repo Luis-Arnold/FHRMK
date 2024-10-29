@@ -47,6 +47,3 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
-
-# Ignore Data folder
-/Data/
