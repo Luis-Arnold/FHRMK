@@ -1,21 +1,53 @@
-# Load the RDA file
-load("~/FHNW/SecondSemester/Research Methods/Project/Data/easySHARE_rel9-0-0_R/easySHARE_rel9_0_0.rda")
+# easySHARE_rel9_0_0
 
-# Assuming the dataset is loaded into an object, inspect the object names
-ls()
+# Assuming 'easyshare' is the data frame containing the data
+# and 'birth_country' is the variable for the ISO country code of birth
 
-# Replace 'dataset_name' with the actual object name if needed
-# First look at the structure of the dataset
-str(easySHARE_rel9_0_0)
+# List of ISO country codes for European countries (simplified example)
+european_iso_codes <- c("AT", "BE", "BG", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", 
+                        "GR", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL", "PL", 
+                        "PT", "RO", "SK", "SI", "ES", "SE", "CH", "GB", "IS", "NO")
 
-# Display the first few rows
-head(easySHARE_rel9_0_0)
+# Filter valid data (non-missing birth_country)
+valid_data <- easySHARE_rel9_0_0[!is.na(easySHARE_rel9_0_0$birth_country), ]
 
-# Summary statistics for numerical columns
-summary(easySHARE_rel9_0_0)
+head(valid_data)
 
-# Check for missing values
-colSums(is.na(easySHARE_rel9_0_0))
+# Count how many people were born outside of Europe
+born_outside_europe <- sum(!(valid_data$birth_country %in% european_iso_codes))
 
-# View column names
-colnames(easySHARE_rel9_0_0)
+# Total number of valid respondents
+total_respondents <- nrow(valid_data)
+
+# Calculate the percentage
+percentage_born_outside_europe <- (born_outside_europe / total_respondents) * 100
+
+# Print the result
+#cat("Percentage of respondents born outside Europe:", round(percentage_born_outside_europe, 2), "%\n")
+
+# Check the unique values of birth_country to see how the country codes are represented
+unique(valid_data$birth_country)
+
+# Trim any leading/trailing spaces in birth_country and country_mod (just in case)
+valid_data$birth_country <- trimws(valid_data$birth_country)
+valid_data$country_mod <- trimws(valid_data$country_mod)
+
+# List of ISO country codes for European countries (simplified example)
+european_iso_codes <- c("AT", "BE", "BG", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", 
+                        "GR", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL", "PL", 
+                        "PT", "RO", "SK", "SI", "ES", "SE", "CH", "GB", "IS", "NO")
+
+# Check if the country codes match with European country codes
+valid_data$born_in_europe <- valid_data$birth_country %in% european_iso_codes
+
+# Count how many people were born outside of Europe
+born_outside_europe <- sum(!valid_data$born_in_europe)
+
+# Total number of valid respondents
+total_respondents <- nrow(valid_data)
+
+# Calculate the percentage
+percentage_born_outside_europe <- (born_outside_europe / total_respondents) * 100
+
+# Print the result
+cat("Percentage of respondents born outside Europe:", round(percentage_born_outside_europe, 2), "%\n")

@@ -1,0 +1,19 @@
+---
+title: "RMKAgeing"
+format: html
+editor: visual
+---
+
+## Healthy Ageing
+
+```{r}
+valid_data <- easySHARE_rel9_0_0[!is.na(easySHARE_rel9_0_0$birth_country), ]
+```
+
+## Running Code
+
+```{r}
+head(valid_data)
+```
+
+We see in the code above that age of the first patient is 51.9
