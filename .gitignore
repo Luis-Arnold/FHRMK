@@ -47,3 +47,6 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+
+# Data too big
+/data/WDI_CSV_2024_10_24
