@@ -6,15 +6,23 @@ editor: visual
 
 # Preconditions
 
+Share dataset and [World Development Indicators](https://datacatalog.worldbank.org/search/dataset/0037712/World-Development-Indicators?) of the World Bank Group
+
 ```{r}
 
-filePath <- "C:/Users/luisj/Documents/Github/FHRMK/RawData/easySHARE_rel9-0-0_R/easySHARE_rel9_0_0.rda"
+SHARE_path <- "C:/Users/luisj/Documents/Github/FHRMK/RawData/easySHARE_rel9-0-0_R/easySHARE_rel9_0_0.rda"
+
+WDIfinancial_path <- "C:/Users/luisj/Documents/Github/FHRMK/RawData/WDI_CSV_2024_10_24/WDICSV.csv"
+
+WDIcountry_path <- "C:/Users/luisj/Documents/Github/FHRMK/RawData/WDI_CSV_2024_10_24/WDICountry.csv"
 
 #setwd(filePath)
 
-load(filePath)
+load(SHARE_path)
 
-head(easySHARE_rel9_0_0)
+WDIfinancial_dataset <- read.csv(WDIfinancial_path, header = TRUE, sep = ",")
+
+WDIcountry_dataset <- read.csv(WDIcountry_path, header = TRUE, sep = ",")
 ```
 
 ### Install Packages
@@ -77,6 +85,25 @@ library(xgboost)
 ```
 
 # Clean Data
+
+Get relevant country tags
+
+```{r}
+CountryTags <- WDIcountry_dataset %>%
+  filter(Other.groups == "Euro area" 
+         | Country.Code == "CHE"
+         | Country.Code == "ISR") %>%
+  select(Country.Code, Short.Name, Income.Group)
+
+rm(WDIcountry_dataset)
+head(CountryTags)
+```
+
+Remove irrelevant Countries from WDI Data set
+
+```{r}
+
+```
 
 ### Omit Columns
 
