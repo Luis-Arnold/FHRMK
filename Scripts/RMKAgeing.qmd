@@ -117,19 +117,28 @@ if (exists("WDIcountry_dataset")) {
 head(CountryTags)
 ```
 
-Remove irrelevant Countries from WDI Data set
+Select relevant Columns and rows, remove irrelevant Countries from Crisis Data
 
 ```{r}
 
-if (exists("WDIfinancial_dataset")) {
-  EUfinancial_dataset <- WDIfinancial_dataset %>%
-    inner_join(CountryTags, by = "Country.Code")
+if (exists("global_crisis_data")) {
+  EU_crisis_dataset <- global_crisis_data %>%
+    select("CC3",
+           "Country",
+           "Year",
+           "Banking Crisis",
+           "Systemic Crisis",
+           "Gold Standard",
+           "Currency Crises",
+           "Inflation Crises") %>%
+    filter(Year > 1900) %>%
+    inner_join(CountryTags, global_crisis_data, by = c("CC3" = "Country.Code"))
   
-  rm(WDIfinancial_dataset) #CLEANUP
+  rm(global_crisis_data) #CLEANUP
 }
 
-EUfinancial_dataset %>%
-  distinct(Short.Name, .keep_all = TRUE) %>%
+EU_crisis_dataset_relevant %>%
+  distinct(Country, .keep_all = TRUE) %>%
   head(6)
 ```
 
@@ -141,16 +150,21 @@ Select relevant financial indicators
 
 -   GDP growth (annual %) -\> Simple, raw comparison of income and economic output. (NY.GDP.MKTP.KD.ZG)
 
+Remove irrelevant Countries from WDI Data set
+
 ```{r}
 
-if (exists("EUfinancial_dataset")) {
-  EUfinancial_dataset_relevant <- EUfinancial_dataset %>%
+if (exists("WDIfinancial_dataset")) {
+  EUfinancial_dataset <- WDIfinancial_dataset %>%
     filter(Indicator.Code == "NY.GDP.PCAP.PP.CD" |
            Indicator.Code == "NY.GDP.MKTP.PP.CD" |
-           Indicator.Code == "NY.GDP.MKTP.KD.ZG")
+           Indicator.Code == "NY.GDP.MKTP.KD.ZG")%>%
+    inner_join(CountryTags, by = "Country.Code")
+  
+  rm(WDIfinancial_dataset) #CLEANUP
 }
 
-head(EUfinancial_dataset_relevant)
+head(EUfinancial_dataset)
 ```
 
 ### Omit Columns
