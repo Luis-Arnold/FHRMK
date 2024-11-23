@@ -49,4 +49,4 @@ po/*~
 rsconnect/
 
 # Data too big
-/data/WDI_CSV_2024_10_24
+/RawData/WDI_CSV_2024_10_24
