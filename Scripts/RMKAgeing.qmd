@@ -4,7 +4,7 @@ format: html
 editor: visual
 ---
 
-### Input Data
+# Preconditions
 
 ```{r}
 
@@ -15,8 +15,6 @@ filePath <- "C:/Users/luisj/Documents/Github/FHRMK/RawData/easySHARE_rel9-0-0_R/
 load(filePath)
 
 head(easySHARE_rel9_0_0)
-
-
 ```
 
 ### Install Packages
@@ -78,7 +76,7 @@ library(parallel)
 library(xgboost)
 ```
 
-### Clean Data
+# Clean Data
 
 ### Omit Columns
 
