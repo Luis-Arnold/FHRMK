@@ -50,3 +50,5 @@ rsconnect/
 
 # Data too big
 /RawData/WDI_CSV_2024_10_24
+
+/RawData/20160923_global_crisis_data.xlsx
