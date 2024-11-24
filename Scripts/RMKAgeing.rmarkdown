@@ -4,9 +4,13 @@ format: html
 editor: visual
 ---
 
+
+
 # Preconditions
 
 ### Install Packages
+
+
 
 ```{r}
 if (!requireNamespace("readr", quietly = TRUE)) {
@@ -53,7 +57,11 @@ if (!requireNamespace("countrycode", quietly = TRUE)) {
 }
 ```
 
+
+
 ### Load Packages
+
+
 
 ```{r}
 
@@ -73,9 +81,13 @@ library(readxl)
 library(countrycode)
 ```
 
+
+
 ### Load Dataset
 
 Share dataset and [World Development Indicators](https://datacatalog.worldbank.org/search/dataset/0037712/World-Development-Indicators?) of the World Bank Group
+
+
 
 ```{r}
 
@@ -102,9 +114,13 @@ global_crisis_data <- read_excel(global_crisis_data_path, na = c("",
                                                                  "NA"))
 ```
 
+
+
 # Clean Data
 
 Get relevant country tags of financial Data
+
+
 
 ```{r}
 
@@ -121,9 +137,13 @@ if (exists("WDIcountry_dataset")) {
 head(CountryTags)
 ```
 
+
+
 Select relevant Columns and rows, remove irrelevant Countries from Crisis Data
 
 Remove data older than 20 years before the birth of the oldest participant.
+
+
 
 ```{r}
 
@@ -150,6 +170,8 @@ EU_crisis_dataset %>%
   head(6)
 ```
 
+
+
 Select relevant financial indicators
 
 -   GDP per capita, PPP (current international \$) -\> Comparing living standards and economic well being. (NY.GDP.PCAP.PP.CD)
@@ -160,13 +182,15 @@ Select relevant financial indicators
 
 Remove irrelevant Countries from WDI Data set
 
+
+
 ```{r}
 
 if (exists("WDIfinancial_dataset")) {
   EUfinancial_dataset <- WDIfinancial_dataset %>%
     filter(Indicator.Code == "NY.GDP.PCAP.PP.CD" |
            Indicator.Code == "NY.GDP.MKTP.PP.CD" |
-           Indicator.Code == "NY.GDP.MKTP.KD.ZG") %>%
+           Indicator.Code == "NY.GDP.MKTP.KD.ZG")%>%
     inner_join(CountryTags, by = "Country.Code")
   
   rm(WDIfinancial_dataset) #CLEANUP
@@ -175,7 +199,11 @@ if (exists("WDIfinancial_dataset")) {
 head(EUfinancial_dataset)
 ```
 
+
+
 ### Tidy up numeric
+
+
 
 ```{r}
 
@@ -183,7 +211,11 @@ NA_counts <- colSums(is.na(easySHARE_rel9_0_0))
 NA_counts[NA_counts > 0]
 ```
 
+
+
 ### Impute Values with median
+
+
 
 ```{r}
 easySHARE_rel9_0_0$income_pct_w9[is.na(easySHARE_rel9_0_0$income_pct_w9)] <- median(easySHARE_rel9_0_0$income_pct_w9, na.rm = TRUE)
@@ -195,22 +227,7 @@ NA_counts <- colSums(is.na(easySHARE_rel9_0_0))
 NA_counts[NA_counts > 0]
 ```
 
-Count number of participants with Big 5 personality trait answers
 
-```{r}
-citizens_with_bfp <- easySHARE_rel9_0_0 %>%
-  filter(birth_country %in% citizenship &
-         birth_country == country_mod) %>%
-  filter(bfi10_extra_mod > 0 &
-         bfi10_agree_mod > 0 &
-         bfi10_consc_mod > 0 &
-         bfi10_neuro_mod > 0 &
-         bfi10_open_mod > 0) %>%
-  distinct(mergeid, .keep_all = TRUE) %>%
-  summarise(count = n())
-
-citizens_with_bfp
-```
 
 ### Identify Citizens in SHARE
 
@@ -220,118 +237,28 @@ citizens_with_bfp
 
 -   Country Mod -\> Country as ISO Code.
 
+
+
 ```{r}
 
 if (exists("easySHARE_rel9_0_0")) {
   citizens <- easySHARE_rel9_0_0 %>%
     filter(birth_country %in% citizenship &
            birth_country == country_mod) %>%
-    filter(bfi10_extra_mod > 0 &
-           bfi10_agree_mod > 0 &
-           bfi10_consc_mod > 0 &
-           bfi10_neuro_mod > 0 &
-           bfi10_open_mod > 0) %>%
-    distinct(mergeid, .keep_all = TRUE) %>%
-    select("mergeid",
-           "int_year",
-           "age",
-           "country_mod",
-           "female",
-           "bfi10_extra_mod",
-           "bfi10_agree_mod",
-           "bfi10_consc_mod",
-           "bfi10_neuro_mod",
-           "bfi10_open_mod") %>%
-    mutate(birth_year = int_year - age)
+    distinct(hhid, .keep_all = TRUE)
   
   citizens$country_mod <- countrycode(citizens$country_mod, origin = "iso3n", destination = "iso3c")
   
-  #rm(easySHARE_rel9_0_0)
+  rm(easySHARE_rel9_0_0)
 }
+
+
 
 head(citizens)
 ```
 
-## Add columns - influenced by recessions at times in their lives
-
-Add life ranges to share dataset
-
 ```{r}
 
-horizontal_crises <- EU_crisis_dataset %>%
-  pivot_longer(cols = c(`Banking Crisis`, `Currency Crises`, `Inflation Crises`), 
-               names_to = "Crisis_Type", 
-               values_to = "Crisis_Flag") %>%
-  filter(Crisis_Flag == 1) %>%  # Keep only rows where the crisis occurred
-  group_by(CC3, Crisis_Type) %>%
-  summarise(Years = list(Year), .groups = "drop") %>%
-  pivot_wider(names_from = Crisis_Type, values_from = Years)
-
-
-citizens <- citizens %>%
-  mutate(
-    range_birth = Map(seq, birth_year - 7, birth_year + 5),
-    range_teenage = Map(seq, birth_year + 13 - 2, birth_year + 13 + 2),
-    range_early_adulthood = Map(seq, birth_year + 20 - 3, birth_year + 20 + 3),
-    range_adulthood = Map(seq, birth_year + 30 - 5, birth_year + 30 + 5)
-  )
-
-matches <- citizens %>%
-  left_join(horizontal_crises, by = c("country_mod" = "CC3")) %>%
-  rowwise() %>%
-  mutate(
-    match_birth = as.integer(length(intersect(unlist(range_birth),
-                                              unlist(`Banking Crisis`))) > 0),
-    match_teenage = as.integer(length(intersect(unlist(range_teenage),
-                                                unlist(`Banking Crisis`))) > 0),
-    match_early_adulthood = as.integer(length(intersect(unlist(range_early_adulthood),
-                                                        unlist(`Banking Crisis`))) > 0),
-    match_adulthood = as.integer(length(intersect(unlist(range_adulthood),
-                                                  unlist(`Banking Crisis`))) > 0)
-  ) %>%
-  ungroup() %>%
-  select(mergeid,
-         int_year,
-         age,
-         country_mod,
-         female,
-         bfi10_extra_mod,
-         bfi10_agree_mod,
-         bfi10_consc_mod,
-         bfi10_neuro_mod,
-         bfi10_open_mod,
-         match_birth,
-         match_teenage,
-         match_early_adulthood,
-         match_adulthood)
-
-match_for_matrix <- matches %>%
-  select(int_year,
-         age,
-         female,
-         bfi10_extra_mod,
-         bfi10_agree_mod,
-         bfi10_consc_mod,
-         bfi10_neuro_mod,
-         bfi10_open_mod,
-         match_birth,
-         match_teenage,
-         match_early_adulthood,
-         match_adulthood)
-```
-
-TODO Now these can be analyzed for the impact of recessions during times in their lives.
-
-```{r}
-correlation_matrix <- cor(match_for_matrix, use = "pairwise.complete.obs")
-
-View(correlation_matrix)
-
-png("correlation_plot_2.png", width = 1800, height = 1800)
-
-corrplot(correlation_matrix, method = "color", tl.col = "black", tl.srt = 45)
-
-dev.off()
 ```
 
 ```{r}
@@ -347,7 +274,11 @@ dev.off()  # Close the file
 df_3 <- df_dummies
 ```
 
+
+
 ### Data Type Divider
+
+
 
 ```{r}
 
@@ -371,7 +302,11 @@ for (type in unique_types) {
 rm(column_types, unique_types, type, df_type_name)
 ```
 
+
+
 ### Tidy up text
+
+
 
 ```{r}
 
@@ -397,7 +332,11 @@ str(df_character)
 rm(chr_omit)
 ```
 
+
+
 ### Possible steps, if data was missing
+
+
 
 ```{r}
 
@@ -442,7 +381,11 @@ df_numeric_3 <- df_numeric_2[, c("int_rate","loan_amnt", "annual_inc", "dti",
                                         "tot_cur_bal", "total_rev_hi_lim")]
 ```
 
+
+
 ### Combining Datamaframe
+
+
 
 ```{r}
 
@@ -465,7 +408,11 @@ rm(factor_cols)
 
 ```
 
+
+
 Create images
+
+
 
 ```{r}
 
@@ -482,7 +429,11 @@ dev.off()  # Close the file
 df_3 <- df_dummies
 ```
 
+
+
 ### Outliers
+
+
 
 ```{r}
 
@@ -552,9 +503,13 @@ ggplot(df_long, aes(x = variable, y = value)) +
 df_5 <- df_4 %>% select(-tot_cur_bal, -mths_since_last_record)
 ```
 
+
+
 # Train Model
 
 ### Cross Validation (K-METHOD)
+
+
 
 ```{r}
 
@@ -600,7 +555,11 @@ mse <- mean((validation_data$int_rate - predictions)^2)
 mse
 ```
 
+
+
 ### Checking Multicolinearity once more
+
+
 
 ```{r}
 
@@ -653,7 +612,11 @@ df_6 <- df_5 %>%
          -delinq_2yrs)
 ```
 
+
+
 ### Cross Validation (K-METHOD) 2.0
+
+
 
 ```{r}
 
@@ -689,7 +652,11 @@ mse
 # [1] 11.01383
 ```
 
+
+
 ### Random Forest (Regression)
+
+
 
 ```{r}
 
@@ -725,7 +692,11 @@ mse_rf <- mean((predictions_rf - validation_data$int_rate)^2)
 mse_rf
 ```
 
+
+
 ### Sample Stratified Method
+
+
 
 ```{r}
 
@@ -753,7 +724,11 @@ df_sample <- subset(df_sample, select = -c(income_range))
 # Lets try again, shall we?
 ```
 
+
+
 ### Random Forest
+
+
 
 ```{r}
 
@@ -791,7 +766,11 @@ mse_rf <- mean((predictions_rf - validation_data$int_rate)^2)
 mse_rf
 ```
 
+
+
 ### XGBoost
+
+
 
 ```{r}
 
@@ -811,3 +790,4 @@ mse
 
 # FINALLY -> 9 both training and validation
 ```
+
