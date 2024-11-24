@@ -51,6 +51,8 @@ if (!requireNamespace("readxl", quietly = TRUE)) {
 if (!requireNamespace("countrycode", quietly = TRUE)) {
   install.packages("countrycode")
 }
+
+cat("")
 ```
 
 ### Load Packages
@@ -71,6 +73,8 @@ library(parallel)
 library(xgboost)
 library(readxl)
 library(countrycode)
+
+cat("")
 ```
 
 ### Load Dataset
@@ -104,7 +108,7 @@ global_crisis_data <- read_excel(global_crisis_data_path, na = c("",
 
 # Clean Data
 
-Get relevant country tags of financial Data
+Get european country tags of financial Data
 
 ```{r}
 
@@ -175,7 +179,7 @@ if (exists("WDIfinancial_dataset")) {
 head(EUfinancial_dataset)
 ```
 
-### Tidy up numeric
+### Tidy up numeric in SHARE
 
 ```{r}
 
@@ -320,7 +324,9 @@ match_for_matrix <- matches %>%
          match_adulthood)
 ```
 
-TODO Now these can be analyzed for the impact of recessions during times in their lives.
+Now these can be analyzed for the impact of recessions during times in their lives.
+
+# Plotting
 
 ```{r}
 correlation_matrix <- cor(match_for_matrix, use = "pairwise.complete.obs")
@@ -328,161 +334,15 @@ correlation_matrix <- cor(match_for_matrix, use = "pairwise.complete.obs")
 View(correlation_matrix)
 
 png("correlation_plot_2.png", width = 1800, height = 1800)
+```
+
+```{r}
 
 corrplot(correlation_matrix, method = "color", tl.col = "black", tl.srt = 45)
-
-dev.off()
+rm(correlation_matrix)
 ```
 
-```{r}
-
-correlation_matrix <- cor(df_dummies, use = "pairwise.complete.obs")  # Use pairwise complete observations
-## View the correlation matrix
-View(correlation_matrix)
-## Save the correlation plot as a PNG
-png("correlation_plot_2.png", width = 1800, height = 1800)
-corrplot(correlation_matrix, method = "color", tl.col = "black", tl.srt = 45)
-dev.off()  # Close the file
-## df_dummies to df_3
-df_3 <- df_dummies
-```
-
-### Data Type Divider
-
-```{r}
-
-# Get the data types of each column
-column_types <- sapply(easySHARE_rel9_0_0, class)
-
-# Unique data types
-unique_types <- unique(column_types)
-
-# Automatically create a data frame for each data type
-for (type in unique_types) {
-  # Create a dynamic variable name for each data type
-  df_type_name <- paste0("df_", gsub(" ", "_", type))  # Replace spaces with underscores
-  # Subset the columns that match the current type and assign to the data frame
-  assign(df_type_name, easySHARE_rel9_0_0[, column_types == type, drop = FALSE])
-  # Optionally print the names of the created data frames
-  print(paste("Data frame created for type:", df_type_name))
-}
-
-# Clean up unnecessary variables
-rm(column_types, unique_types, type, df_type_name)
-```
-
-### Tidy up text
-
-```{r}
-
-# Columns to omit
-chr_omit <- c("coupleid")
-
-# Create df_character_2 by omitting the specified columns
-characters <- df_character[, !(names(df_character) %in% chr_omit)]
-
-# Convert character columns in df_character_2 to factors
-df_character_2 <- data.frame(lapply(characters, function(x) {
-  if (is.character(x)) {
-    as.factor(x)
-  } else {
-    x
-  }
-}), stringsAsFactors = FALSE)  # Use stringsAsFactors = FALSE to avoid unwanted behavior
-
-# Optionally print the structure of the new data frame to verify the changes
-str(df_character)
-
-# Deleting Variable
-rm(chr_omit)
-```
-
-### Possible steps, if data was missing
-
-```{r}
-
-# Data Mutating
-## Assume `df` is your data frame
-df_numeric_2 <- df_numeric %>%
-  # Impute with mean
-  mutate(
-    open_acc = ifelse(is.na(open_acc), mean(open_acc, na.rm = TRUE), open_acc),
-    total_acc = ifelse(is.na(total_acc), mean(total_acc, na.rm = TRUE), total_acc),
-    annual_inc = ifelse(is.na(annual_inc), mean(annual_inc, na.rm = TRUE), annual_inc),
-    revol_util = ifelse(is.na(revol_util), mean(revol_util, na.rm = TRUE), revol_util)
-  ) %>%
-  # Impute with 0
-  mutate_at(vars(collections_12_mths_ex_med, delinq_2yrs, inq_last_6mths,
-                 mths_since_last_record, revol_bal, open_acc_6m, open_il_6m,
-                 open_il_12m, open_il_24m, mths_since_rcnt_il, total_bal_il,
-                 inq_last_12m, acc_now_delinq, tot_coll_amt, tot_cur_bal,
-                 annual_inc_joint, dti_joint, mths_since_last_delinq,
-                 mths_since_last_major_derog, pub_rec, il_util,
-                 open_rv_12m, open_rv_24m, max_bal_bc, all_util,
-                 total_rev_hi_lim, inq_fi, total_cu_tl),
-            ~ ifelse(is.na(.), 0, .))
-## Checking Na or missing value
-colSums(is.na(df_numeric_2))
-
-# Clearer Image for Correlation
-## Save as PNG with larger dimensions and correlation numbers inside the squares
-png("correlation_plot.png", width = 1720, height = 1720)
-## Generate the correlation plot with numbers inside the squares
-corrplot(cor(df_numeric_2), 
-         method = "color",          # Use color for the squares
-         tl.col = "black",          # Text label color
-         tl.srt = 45,               # Rotate the text labels at 45 degrees
-         addCoef.col = "black")      # Add correlation numbers inside the squares with black text
-dev.off()  # Save and close the PNG file
-
-# Omit some columns making new dataframe
-df_numeric_3 <- df_numeric_2[, c("int_rate","loan_amnt", "annual_inc", "dti", 
-                                        "delinq_2yrs","mths_since_last_record",
-                                        "inq_last_6mths", "revol_util", 
-                                        "tot_cur_bal", "total_rev_hi_lim")]
-```
-
-### Combining Datamaframe
-
-```{r}
-
-# Combining the Dataset (dataframe)
-df_2 <- cbind(df_numeric_3, df_character_3)
-
-# Omit zip code, because we have addr_state
-df_2 <- df_2[, !(names(df_2) %in% c("zip_code"))]
-
-# Seeing again correlation test to see the correlation
-## Identify factor columns in df_2
-factor_cols <- sapply(df_2, is.factor)
-## Create dummy variables for the factor columns
-dummy_vars <- model.matrix(~ . - 1, data = df_2[, factor_cols])  # Exclude the intercept
-## Combine dummy variables with the original data frame (excluding factor columns)
-df_dummies <- cbind(df_2[, !factor_cols], dummy_vars)  # Keep non-factor columns and add dummy variables
-## Delete variable
-rm(dummy_vars)
-rm(factor_cols)
-
-```
-
-Create images
-
-```{r}
-
-# Correlation test
-## Calculate the correlation matrix
-correlation_matrix <- cor(df_dummies, use = "pairwise.complete.obs")  # Use pairwise complete observations
-## View the correlation matrix
-View(correlation_matrix)
-## Save the correlation plot as a PNG
-png("correlation_plot_2.png", width = 1800, height = 1800)
-corrplot(correlation_matrix, method = "color", tl.col = "black", tl.srt = 45)
-dev.off()  # Close the file
-## df_dummies to df_3
-df_3 <- df_dummies
-```
-
-### Outliers
+### Outliers \<look at\>
 
 ```{r}
 
@@ -558,44 +418,26 @@ df_5 <- df_4 %>% select(-tot_cur_bal, -mths_since_last_record)
 
 ```{r}
 
-# Getting DF for Linear Regression Model
-df <- df_5
+set.seed(1)
 
-# Sample data (replace with your actual df)
-set.seed(1)  # Set seed for reproducibility
+match_df <- subset(match_for_matrix)
 
-# Removing the 'term60 months' column if it exists
-df <- subset(df, select = -`term60 months`)
+train_index <- sample(1:nrow(match_df), 0.9 * nrow(match_df))
+train_data <- match_df[train_index, ]
+validation_data <- match_df[-train_index, ]
 
-# Split df into 90% training and 10% validation
-train_index <- sample(1:nrow(df), 0.9 * nrow(df))  # Get 90% of row indices for training
-train_data <- df[train_index, ]  # Training data
-validation_data <- df[-train_index, ]  # Validation data
-
-# Set up cross-validation control (e.g., 10-fold)
 control <- trainControl(method = "cv", number = 10)
 
-# Train the Linear Model using cross-validation
-# model <- train(int_rate ~ ., data = train_data, method = "lm", trControl = control)
+df <- subset(match_df, select = -bfi10_extra_mod)
 
-# Checking model
-# summary(model)
-# IT looks like delinq_2yrs having an NA moment, we can exclude it
-df <- subset(df, select = -delinq_2yrs)
+train_index <- sample(1:nrow(df), 0.9 * nrow(df))
+train_data <- df[train_index, ]
+validation_data <- df[-train_index, ]
 
-# Split df into 90% training and 10% validation
-train_index <- sample(1:nrow(df), 0.9 * nrow(df))  # Get 90% of row indices for training
-train_data <- df[train_index, ]  # Training data
-validation_data <- df[-train_index, ]  # Validation data
+model <- train(match_birth ~ ., data = train_data, method = "lm", trControl = control)
 
-# Train the Linear Model using cross-validation
-model <- train(int_rate ~ ., data = train_data, method = "lm", trControl = control)
-
-# Calculate evaluation metrics on the validation set using predictions
 predictions <- predict(model, newdata = validation_data)
 
-# Calculate Evaluation Metrics
-## Mean Squared Error (MSE)
 mse <- mean((validation_data$int_rate - predictions)^2)
 mse
 ```
