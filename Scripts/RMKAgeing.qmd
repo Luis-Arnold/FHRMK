@@ -4,11 +4,16 @@ format: html
 editor: visual
 ---
 
+Methodology
+
+Describe Data
+
 # Preconditions
 
 ### Install Packages
 
 ```{r}
+
 if (!requireNamespace("readr", quietly = TRUE)) {
   install.packages("readr")
 }
@@ -51,8 +56,6 @@ if (!requireNamespace("readxl", quietly = TRUE)) {
 if (!requireNamespace("countrycode", quietly = TRUE)) {
   install.packages("countrycode")
 }
-
-cat("")
 ```
 
 ### Load Packages
@@ -73,8 +76,6 @@ library(parallel)
 library(xgboost)
 library(readxl)
 library(countrycode)
-
-cat("")
 ```
 
 ### Load Dataset
@@ -104,11 +105,13 @@ global_crisis_data <- read_excel(global_crisis_data_path, na = c("",
                                                                  "N/A",
                                                                  "n.a.",
                                                                  "NA"))
+
+rm(SHARE_path, WDIfinancial_path, global_crisis_data_path)
 ```
 
 # Clean Data
 
-Get european country tags of financial Data
+Get European country tags of financial Data
 
 ```{r}
 
@@ -117,7 +120,7 @@ if (exists("WDIcountry_dataset")) {
     filter(Other.groups == "Euro area"
            | Country.Code == "CHE"
            | Country.Code == "ISR") %>%
-    select(Country.Code, Short.Name)
+    select(Country.Code)
   
   rm(WDIcountry_dataset) #CLEANUP
 }
@@ -190,10 +193,8 @@ NA_counts[NA_counts > 0]
 ### Impute Values with median
 
 ```{r}
-easySHARE_rel9_0_0$income_pct_w9[is.na(easySHARE_rel9_0_0$income_pct_w9)] <- median(easySHARE_rel9_0_0$income_pct_w9, na.rm = TRUE)
-```
 
-```{r}
+easySHARE_rel9_0_0$income_pct_w9[is.na(easySHARE_rel9_0_0$income_pct_w9)] <- median(easySHARE_rel9_0_0$income_pct_w9, na.rm = TRUE)
 
 NA_counts <- colSums(is.na(easySHARE_rel9_0_0))
 NA_counts[NA_counts > 0]
@@ -202,6 +203,12 @@ NA_counts[NA_counts > 0]
 Count number of participants with Big 5 personality trait answers
 
 ```{r}
+
+head(easySHARE_rel9_0_0)
+```
+
+```{r}
+
 citizens_with_bfp <- easySHARE_rel9_0_0 %>%
   filter(birth_country %in% citizenship &
          birth_country == country_mod) %>%
@@ -215,6 +222,8 @@ citizens_with_bfp <- easySHARE_rel9_0_0 %>%
 
 citizens_with_bfp
 ```
+
+We look at distinct people
 
 ### Identify Citizens in SHARE
 
@@ -275,9 +284,11 @@ horizontal_crises <- EU_crisis_dataset %>%
 citizens <- citizens %>%
   mutate(
     range_birth = Map(seq, birth_year - 7, birth_year + 5),
+    range_childhood = Map(seq, birth_year + 6, birth_year + 10),
     range_teenage = Map(seq, birth_year + 13 - 2, birth_year + 13 + 2),
     range_early_adulthood = Map(seq, birth_year + 20 - 3, birth_year + 20 + 3),
-    range_adulthood = Map(seq, birth_year + 30 - 5, birth_year + 30 + 5)
+    range_adulthood = Map(seq, birth_year + 30 - 5, birth_year + 30 + 5),
+    range_retirement = Map(seq, birth_year + 50 - 10, birth_year + 30 + 10)
   )
 
 matches <- citizens %>%
