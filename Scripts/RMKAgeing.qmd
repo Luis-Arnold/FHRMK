@@ -86,8 +86,6 @@ Share dataset and [World Development Indicators](https://datacatalog.worldbank.o
 
 SHARE_path <- "C:/Users/luisj/Documents/Github/FHRMK/RawData/easySHARE_rel9-0-0_R/easySHARE_rel9_0_0.rda"
 
-WDIfinancial_path <- "C:/Users/luisj/Documents/Github/FHRMK/RawData/WDI_CSV_2024_10_24/WDICSV.csv"
-
 WDIcountry_path <- "C:/Users/luisj/Documents/Github/FHRMK/RawData/WDI_CSV_2024_10_24/WDICountry.csv"
 
 global_crisis_data_path <- "C:/Users/luisj/Documents/Github/FHRMK/RawData/20160923_global_crisis_data.xlsx"
@@ -95,8 +93,6 @@ global_crisis_data_path <- "C:/Users/luisj/Documents/Github/FHRMK/RawData/201609
 #setwd(filePath)
 
 load(SHARE_path)
-
-WDIfinancial_dataset <- read.csv(WDIfinancial_path, header = TRUE, sep = ",")
 
 WDIcountry_dataset <- read.csv(WDIcountry_path, header = TRUE, sep = ",")
 
@@ -157,31 +153,6 @@ EU_crisis_dataset %>%
   head(6)
 ```
 
-Select relevant financial indicators
-
--   GDP per capita, PPP (current international \$) -\> Comparing living standards and economic well being. (NY.GDP.PCAP.PP.CD)
-
--   GDP, PPP (current international \$) -\> Comparing size of economies, adjusted for price differences. (NY.GDP.MKTP.PP.CD)
-
--   GDP growth (annual %) -\> Simple, raw comparison of income and economic output. (NY.GDP.MKTP.KD.ZG)
-
-Remove irrelevant Countries from WDI Data set
-
-```{r}
-
-if (exists("WDIfinancial_dataset")) {
-  EUfinancial_dataset <- WDIfinancial_dataset %>%
-    filter(Indicator.Code == "NY.GDP.PCAP.PP.CD" |
-           Indicator.Code == "NY.GDP.MKTP.PP.CD" |
-           Indicator.Code == "NY.GDP.MKTP.KD.ZG") %>%
-    inner_join(CountryTags, by = "Country.Code")
-  
-  rm(WDIfinancial_dataset) #CLEANUP
-}
-
-head(EUfinancial_dataset)
-```
-
 ### Tidy up numeric in SHARE
 
 ```{r}
@@ -206,6 +177,8 @@ Count number of participants with Big 5 personality trait answers
 
 head(easySHARE_rel9_0_0)
 ```
+
+Looking at how many people have values for big five personality traits.
 
 ```{r}
 
