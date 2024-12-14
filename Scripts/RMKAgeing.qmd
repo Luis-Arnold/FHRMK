@@ -102,7 +102,7 @@ global_crisis_data <- read_excel(global_crisis_data_path, na = c("",
                                                                  "n.a.",
                                                                  "NA"))
 
-rm(SHARE_path, WDIfinancial_path, global_crisis_data_path)
+rm(SHARE_path, global_crisis_data_path)
 ```
 
 # Clean Data
@@ -238,6 +238,29 @@ if (exists("easySHARE_rel9_0_0")) {
 head(citizens)
 ```
 
+### Impute Crisis Data with 0
+
+```{r}
+NA_counts <- colSums(is.na(EU_crisis_dataset))
+NA_counts[NA_counts > 0]
+```
+
+```{r}
+EU_crisis_dataset$`Banking Crisis`[is.na(EU_crisis_dataset$`Banking Crisis`)] <- 0
+EU_crisis_dataset$`Systemic Crisis`[is.na(EU_crisis_dataset$`Systemic Crisis`)] <- 0
+EU_crisis_dataset$`Inflation Crises`[is.na(EU_crisis_dataset$`Inflation Crises`)] <- 0
+EU_crisis_dataset$`Currency Crises`[is.na(EU_crisis_dataset$`Currency Crises`)] <- 0
+```
+
+```{r}
+NA_counts <- colSums(is.na(EU_crisis_dataset))
+NA_counts[NA_counts > 0]
+```
+
+```{r}
+head(EU_crisis_dataset)
+```
+
 ## Add columns - influenced by recessions at times in their lives
 
 Add life ranges to share dataset
@@ -264,34 +287,57 @@ citizens <- citizens %>%
     range_late_adulthood = Map(seq, birth_year + 40 - 5, birth_year + 40 + 5)
   )
 
-# TODO add crises, try analysis methods
+# TODO try analysis methods
 
 matches <- citizens %>%
   left_join(horizontal_crises, by = c("country_mod" = "CC3")) %>%
   rowwise() %>%
   mutate(
-    #
-    cr_bank_birth = as.integer(length(intersect(unlist(range_birth),
+    # Banking crisis
+    cr_banking_birth = as.integer(length(intersect(unlist(range_birth),
                                               unlist(`Banking Crisis`))) > 0),
-    cr_bank_teenage = as.integer(length(intersect(unlist(range_teenage),
+    cr_banking_teenage = as.integer(length(intersect(unlist(range_teenage),
                                                 unlist(`Banking Crisis`))) > 0),
-    cr_bank_early_adulthood = as.integer(length(intersect(unlist(range_early_adulthood),
+    cr_banking_early_adulthood = as.integer(length(intersect(unlist(range_early_adulthood),
                                                         unlist(`Banking Crisis`))) > 0),
-    cr_bank_middle_adulthood = as.integer(length(intersect(unlist(range_middle_adulthood),
+    cr_banking_middle_adulthood = as.integer(length(intersect(unlist(range_middle_adulthood),
                                                   unlist(`Banking Crisis`))) > 0),
-    cr_bank_late_adulthood = as.integer(length(intersect(unlist(range_late_adulthood),
+    cr_banking_late_adulthood = as.integer(length(intersect(unlist(range_late_adulthood),
                                                   unlist(`Banking Crisis`))) > 0),
+    # Systematic crisis
+    cr_system_birth = as.integer(length(intersect(unlist(range_birth),
+                                              unlist(`Banking Crisis`))) > 0),
+    cr_system_teenage = as.integer(length(intersect(unlist(range_teenage),
+                                                unlist(`Banking Crisis`))) > 0),
+    cr_system_early_adulthood = as.integer(length(intersect(unlist(range_early_adulthood),
+                                                        unlist(`Banking Crisis`))) > 0),
+    cr_system_middle_adulthood = as.integer(length(intersect(unlist(range_middle_adulthood),
+                                                  unlist(`Banking Crisis`))) > 0),
+    cr_system_late_adulthood = as.integer(length(intersect(unlist(range_late_adulthood),
+                                                  unlist(`Banking Crisis`))) > 0),
+    # Currency crisis
+    cr_currency_birth = as.integer(length(intersect(unlist(range_birth),
+                                              unlist(`Currency Crises`))) > 0),
+    cr_currency_teenage = as.integer(length(intersect(unlist(range_teenage),
+                                                unlist(`Currency Crises`))) > 0),
+    cr_currency_early_adulthood = as.integer(length(intersect(unlist(range_early_adulthood),
+                                                        unlist(`Currency Crises`))) > 0),
+    cr_currency_middle_adulthood = as.integer(length(intersect(unlist(range_middle_adulthood),
+                                                  unlist(`Currency Crises`))) > 0),
+    cr_currency_late_adulthood = as.integer(length(intersect(unlist(range_late_adulthood),
+                                                  unlist(`Currency Crises`))) > 0),
+    # Inflation crisis
+    cr_inflation_birth = as.integer(length(intersect(unlist(range_birth),
+                                              unlist(`Inflation Crises`))) > 0),
+    cr_inflation_teenage = as.integer(length(intersect(unlist(range_teenage),
+                                                unlist(`Inflation Crises`))) > 0),
+    cr_inflation_early_adulthood = as.integer(length(intersect(unlist(range_early_adulthood),
+                                                        unlist(`Inflation Crises`))) > 0),
+    cr_inflation_middle_adulthood = as.integer(length(intersect(unlist(range_middle_adulthood),
+                                                  unlist(`Inflation Crises`))) > 0),
+    cr_inflation_late_adulthood = as.integer(length(intersect(unlist(range_late_adulthood),
+                                                  unlist(`Inflation Crises`))) > 0)
     
-    cr_bank_birth = as.integer(length(intersect(unlist(range_birth),
-                                              unlist(`Banking Crisis`))) > 0),
-    cr_bank_teenage = as.integer(length(intersect(unlist(range_teenage),
-                                                unlist(`Banking Crisis`))) > 0),
-    cr_bank_early_adulthood = as.integer(length(intersect(unlist(range_early_adulthood),
-                                                        unlist(`Banking Crisis`))) > 0),
-    cr_bank_middle_adulthood = as.integer(length(intersect(unlist(range_middle_adulthood),
-                                                  unlist(`Banking Crisis`))) > 0),
-    cr_bank_late_adulthood = as.integer(length(intersect(unlist(range_late_adulthood),
-                                                  unlist(`Banking Crisis`))) > 0)
   ) %>%
   ungroup() %>%
   select(mergeid,
@@ -304,10 +350,30 @@ matches <- citizens %>%
          bfi10_consc_mod,
          bfi10_neuro_mod,
          bfi10_open_mod,
-         match_birth,
-         match_teenage,
-         match_early_adulthood,
-         match_adulthood)
+         # Banking
+         cr_banking_birth,
+         cr_banking_teenage,
+         cr_banking_early_adulthood,
+         cr_banking_middle_adulthood,
+         cr_banking_late_adulthood,
+         # System
+         cr_system_birth,
+         cr_system_teenage,
+         cr_system_early_adulthood,
+         cr_system_middle_adulthood,
+         cr_system_late_adulthood,
+         # Currency
+         cr_currency_birth,
+         cr_currency_teenage,
+         cr_currency_early_adulthood,
+         cr_currency_middle_adulthood,
+         cr_currency_late_adulthood,
+         # Inflation
+         cr_inflation_birth,
+         cr_inflation_teenage,
+         cr_inflation_early_adulthood,
+         cr_inflation_middle_adulthood,
+         cr_inflation_late_adulthood)
 
 match_for_matrix <- matches %>%
   select(int_year,
@@ -318,10 +384,30 @@ match_for_matrix <- matches %>%
          bfi10_consc_mod,
          bfi10_neuro_mod,
          bfi10_open_mod,
-         match_birth,
-         match_teenage,
-         match_early_adulthood,
-         match_adulthood)
+         # Banking
+         cr_banking_birth,
+         cr_banking_teenage,
+         cr_banking_early_adulthood,
+         cr_banking_middle_adulthood,
+         cr_banking_late_adulthood,
+         # System
+         cr_system_birth,
+         cr_system_teenage,
+         cr_system_early_adulthood,
+         cr_system_middle_adulthood,
+         cr_system_late_adulthood,
+         # Currency
+         cr_currency_birth,
+         cr_currency_teenage,
+         cr_currency_early_adulthood,
+         cr_currency_middle_adulthood,
+         cr_currency_late_adulthood,
+         # Inflation
+         cr_inflation_birth,
+         cr_inflation_teenage,
+         cr_inflation_early_adulthood,
+         cr_inflation_middle_adulthood,
+         cr_inflation_late_adulthood)
 ```
 
 Now these can be analyzed for the impact of recessions during times in their lives.
@@ -333,14 +419,61 @@ correlation_matrix <- cor(match_for_matrix, use = "pairwise.complete.obs")
 
 View(correlation_matrix)
 
-png("correlation_plot_2.png", width = 1800, height = 1800)
+png("correlation_plot_new.png", width = 2800, height = 2800)
 ```
 
 ```{r}
 
 corrplot(correlation_matrix, method = "color", tl.col = "black", tl.srt = 45)
-rm(correlation_matrix)
+
 ```
+
+-   **Pairplots/Scatterplot Matrix**: Visualize relationships between features.
+
+-   **Principal Component Analysis (PCA)**: Reduce dimensionality and find key components.
+
+-   **Mutual Information**: Measure dependency between variables.
+
+-   **Feature Importance**: Use models like Random Forests to determine feature relevance.
+
+-   **Clustering (e.g., k-means, DBSCAN)**: Identify patterns or groupings.
+
+```{r}
+
+set.seed(42)
+
+scaled_data = scale(correlation_matrix)
+pca <- prcomp(scaled_data)
+pca_data <- pca$x[, 1:2]  # Keep the first two components
+kmeans_result <- kmeans(pca_data, centers = 3)
+
+# Visualize PCA-based clustering
+plot(pca_data, col = kmeans_result$cluster, pch = 16, main = "K-means Clustering with PCA")
+points(kmeans_result$centers, col = 1:3, pch = 8, cex = 2)
+
+```
+
+-   **Heatmaps**: Visualize patterns or distributions in data.
+
+```{r}
+
+heatmap(correlation_matrix, main = "Basic Heatmap")
+```
+
+-   **ANOVA or t-tests**: Assess differences between groups.
+
+-   **Partial Correlation**: Control for confounding variables.
+
+```{r}
+
+
+```
+
+-   **Time Series Analysis**: Study trends, seasonality, and cyclic behavior.
+
+-   **Residual Plots**: Evaluate relationships and detect non-linear patterns.
+
+# OTHER PROJECT BELOW \<ignore\>
 
 ### Outliers \<look at\>
 
@@ -440,6 +573,10 @@ predictions <- predict(model, newdata = validation_data)
 
 mse <- mean((validation_data$int_rate - predictions)^2)
 mse
+```
+
+```{r}
+
 ```
 
 ### Checking Multicolinearity once more
