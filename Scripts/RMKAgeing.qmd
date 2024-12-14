@@ -258,23 +258,39 @@ citizens <- citizens %>%
   mutate(
     range_birth = Map(seq, birth_year - 7, birth_year + 5),
     range_childhood = Map(seq, birth_year + 6, birth_year + 10),
-    range_teenage = Map(seq, birth_year + 13 - 2, birth_year + 13 + 2),
-    range_early_adulthood = Map(seq, birth_year + 20 - 3, birth_year + 20 + 3),
-    range_adulthood = Map(seq, birth_year + 30 - 5, birth_year + 30 + 5),
-    range_retirement = Map(seq, birth_year + 50 - 10, birth_year + 30 + 10)
+    range_teenage = Map(seq, birth_year + 13 - 2, birth_year + 13 + 4),
+    range_early_adulthood = Map(seq, birth_year + 20 - 2, birth_year + 20 + 5),
+    range_middle_adulthood = Map(seq, birth_year + 30 - 5, birth_year + 30 + 5),
+    range_late_adulthood = Map(seq, birth_year + 40 - 5, birth_year + 40 + 5)
   )
+
+# TODO add crises, try analysis methods
 
 matches <- citizens %>%
   left_join(horizontal_crises, by = c("country_mod" = "CC3")) %>%
   rowwise() %>%
   mutate(
-    match_birth = as.integer(length(intersect(unlist(range_birth),
+    #
+    cr_bank_birth = as.integer(length(intersect(unlist(range_birth),
                                               unlist(`Banking Crisis`))) > 0),
-    match_teenage = as.integer(length(intersect(unlist(range_teenage),
+    cr_bank_teenage = as.integer(length(intersect(unlist(range_teenage),
                                                 unlist(`Banking Crisis`))) > 0),
-    match_early_adulthood = as.integer(length(intersect(unlist(range_early_adulthood),
+    cr_bank_early_adulthood = as.integer(length(intersect(unlist(range_early_adulthood),
                                                         unlist(`Banking Crisis`))) > 0),
-    match_adulthood = as.integer(length(intersect(unlist(range_adulthood),
+    cr_bank_middle_adulthood = as.integer(length(intersect(unlist(range_middle_adulthood),
+                                                  unlist(`Banking Crisis`))) > 0),
+    cr_bank_late_adulthood = as.integer(length(intersect(unlist(range_late_adulthood),
+                                                  unlist(`Banking Crisis`))) > 0),
+    
+    cr_bank_birth = as.integer(length(intersect(unlist(range_birth),
+                                              unlist(`Banking Crisis`))) > 0),
+    cr_bank_teenage = as.integer(length(intersect(unlist(range_teenage),
+                                                unlist(`Banking Crisis`))) > 0),
+    cr_bank_early_adulthood = as.integer(length(intersect(unlist(range_early_adulthood),
+                                                        unlist(`Banking Crisis`))) > 0),
+    cr_bank_middle_adulthood = as.integer(length(intersect(unlist(range_middle_adulthood),
+                                                  unlist(`Banking Crisis`))) > 0),
+    cr_bank_late_adulthood = as.integer(length(intersect(unlist(range_late_adulthood),
                                                   unlist(`Banking Crisis`))) > 0)
   ) %>%
   ungroup() %>%
