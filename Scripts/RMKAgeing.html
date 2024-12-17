@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>RMKAgeing</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="RMKAgeing_files/libs/clipboard/clipboard.min.js"></script>
+<script src="RMKAgeing_files/libs/quarto-html/quarto.js"></script>
+<script src="RMKAgeing_files/libs/quarto-html/popper.min.js"></script>
+<script src="RMKAgeing_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="RMKAgeing_files/libs/quarto-html/anchor.min.js"></script>
+<link href="RMKAgeing_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="RMKAgeing_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="RMKAgeing_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="RMKAgeing_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="RMKAgeing_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">RMKAgeing</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Methodology</p>
+<p>Describe Data</p>
+<section id="preconditions" class="level1">
+<h1>Preconditions</h1>
+<section id="install-packages" class="level3">
+<h3 class="anchored" data-anchor-id="install-packages">Install Packages</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">"readr"</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">"readr"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">"dplyr"</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">"dplyr"</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">"caret"</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">"caret"</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">"leaps"</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">"leaps"</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">"corrplot"</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">"corrplot"</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">"tidyr"</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">"tidyr"</span>)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">"randomForest"</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">"randomForest"</span>)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">"ggplot2"</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">"ggplot2"</span>)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">"car"</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">"car"</span>)</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">"plotly"</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">"plotly"</span>)</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">"parallel"</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">"parallel"</span>)</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">"xgboost"</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">"xgboost"</span>)</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">"readxl"</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">"readxl"</span>)</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">"countrycode"</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">"countrycode"</span>)</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="load-packages" class="level3">
+<h3 class="anchored" data-anchor-id="load-packages">Load Packages</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(plotly)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Paket 'plotly' wurde unter R Version 4.4.2 erstellt</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Lade nötiges Paket: ggplot2</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attache Paket: 'plotly'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Das folgende Objekt ist maskiert 'package:ggplot2':
+
+    last_plot</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Das folgende Objekt ist maskiert 'package:stats':
+
+    filter</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Das folgende Objekt ist maskiert 'package:graphics':
+
+    layout</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(corrplot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Paket 'corrplot' wurde unter R Version 4.4.2 erstellt</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>corrplot 0.95 loaded</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Paket 'readr' wurde unter R Version 4.4.2 erstellt</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(caret)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Paket 'caret' wurde unter R Version 4.4.2 erstellt</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Lade nötiges Paket: lattice</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(leaps)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Paket 'leaps' wurde unter R Version 4.4.2 erstellt</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Paket 'tidyr' wurde unter R Version 4.4.2 erstellt</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Paket 'dplyr' wurde unter R Version 4.4.2 erstellt</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attache Paket: 'dplyr'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Die folgenden Objekte sind maskiert von 'package:stats':
+
+    filter, lag</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Die folgenden Objekte sind maskiert von 'package:base':
+
+    intersect, setdiff, setequal, union</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(randomForest)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Paket 'randomForest' wurde unter R Version 4.4.2 erstellt</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>randomForest 4.7-1.2</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Type rfNews() to see new features/changes/bug fixes.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attache Paket: 'randomForest'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Das folgende Objekt ist maskiert 'package:dplyr':
+
+    combine</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Das folgende Objekt ist maskiert 'package:ggplot2':
+
+    margin</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(car)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Paket 'car' wurde unter R Version 4.4.2 erstellt</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Lade nötiges Paket: carData</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Paket 'carData' wurde unter R Version 4.4.2 erstellt</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attache Paket: 'car'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Das folgende Objekt ist maskiert 'package:dplyr':
+
+    recode</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(parallel)</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(xgboost)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Paket 'xgboost' wurde unter R Version 4.4.2 erstellt</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attache Paket: 'xgboost'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Das folgende Objekt ist maskiert 'package:dplyr':
+
+    slice</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Das folgende Objekt ist maskiert 'package:plotly':
+
+    slice</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Paket 'readxl' wurde unter R Version 4.4.2 erstellt</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(countrycode)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Paket 'countrycode' wurde unter R Version 4.4.2 erstellt</code></pre>
+</div>
+</div>
+</section>
+<section id="load-dataset" class="level3">
+<h3 class="anchored" data-anchor-id="load-dataset">Load Dataset</h3>
+<p>Share dataset and <a href="https://datacatalog.worldbank.org/search/dataset/0037712/World-Development-Indicators?">World Development Indicators</a> of the World Bank Group</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>SHARE_path <span class="ot">&lt;-</span> <span class="st">"C:/Users/luisj/Documents/Github/FHRMK/RawData/easySHARE_rel9-0-0_R/easySHARE_rel9_0_0.rda"</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>WDIcountry_path <span class="ot">&lt;-</span> <span class="st">"C:/Users/luisj/Documents/Github/FHRMK/RawData/WDI_CSV_2024_10_24/WDICountry.csv"</span></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>global_crisis_data_path <span class="ot">&lt;-</span> <span class="st">"C:/Users/luisj/Documents/Github/FHRMK/RawData/20160923_global_crisis_data.xlsx"</span></span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a><span class="co">#setwd(filePath)</span></span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(SHARE_path)</span>
+<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a>WDIcountry_dataset <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(WDIcountry_path, <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">sep =</span> <span class="st">","</span>)</span>
+<span id="cb48-12"><a href="#cb48-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-13"><a href="#cb48-13" aria-hidden="true" tabindex="-1"></a>global_crisis_data <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(global_crisis_data_path, <span class="at">na =</span> <span class="fu">c</span>(<span class="st">""</span>,</span>
+<span id="cb48-14"><a href="#cb48-14" aria-hidden="true" tabindex="-1"></a>                                                                 <span class="st">"n/a"</span>,</span>
+<span id="cb48-15"><a href="#cb48-15" aria-hidden="true" tabindex="-1"></a>                                                                 <span class="st">"N/A"</span>,</span>
+<span id="cb48-16"><a href="#cb48-16" aria-hidden="true" tabindex="-1"></a>                                                                 <span class="st">"n.a."</span>,</span>
+<span id="cb48-17"><a href="#cb48-17" aria-hidden="true" tabindex="-1"></a>                                                                 <span class="st">"NA"</span>))</span>
+<span id="cb48-18"><a href="#cb48-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-19"><a href="#cb48-19" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(SHARE_path, global_crisis_data_path)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="clean-data" class="level1">
+<h1>Clean Data</h1>
+<p>Get European country tags of financial Data</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">exists</span>(<span class="st">"WDIcountry_dataset"</span>)) {</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>  CountryTags <span class="ot">&lt;-</span> WDIcountry_dataset <span class="sc">%&gt;%</span></span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(Other.groups <span class="sc">==</span> <span class="st">"Euro area"</span></span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>           <span class="sc">|</span> Country.Code <span class="sc">==</span> <span class="st">"CHE"</span></span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>           <span class="sc">|</span> Country.Code <span class="sc">==</span> <span class="st">"ISR"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(Country.Code)</span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rm</span>(WDIcountry_dataset) <span class="co">#CLEANUP</span></span>
+<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb49-10"><a href="#cb49-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-11"><a href="#cb49-11" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(CountryTags)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Country.Code
+1          AUT
+2          BEL
+3          CHE
+4          CYP
+5          DEU
+6          ESP</code></pre>
+</div>
+</div>
+<p>Select relevant Columns and rows, remove irrelevant Countries from Crisis Data</p>
+<p>Remove data older than 20 years before the birth of the oldest participant.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>relevant_first_year <span class="ot">&lt;-</span> <span class="fu">min</span>(easySHARE_rel9_0_0<span class="sc">$</span>int_year <span class="sc">-</span> easySHARE_rel9_0_0<span class="sc">$</span>age, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">-</span> <span class="dv">20</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">exists</span>(<span class="st">"global_crisis_data"</span>)) {</span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>  EU_crisis_dataset <span class="ot">&lt;-</span> global_crisis_data <span class="sc">%&gt;%</span></span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(<span class="st">"CC3"</span>,</span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a>           <span class="st">"Country"</span>,</span>
+<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a>           <span class="st">"Year"</span>,</span>
+<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a>           <span class="st">"Banking Crisis"</span>,</span>
+<span id="cb51-9"><a href="#cb51-9" aria-hidden="true" tabindex="-1"></a>           <span class="st">"Systemic Crisis"</span>,</span>
+<span id="cb51-10"><a href="#cb51-10" aria-hidden="true" tabindex="-1"></a>           <span class="st">"Gold Standard"</span>,</span>
+<span id="cb51-11"><a href="#cb51-11" aria-hidden="true" tabindex="-1"></a>           <span class="st">"Currency Crises"</span>,</span>
+<span id="cb51-12"><a href="#cb51-12" aria-hidden="true" tabindex="-1"></a>           <span class="st">"Inflation Crises"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb51-13"><a href="#cb51-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(Year <span class="sc">&gt;=</span> relevant_first_year) <span class="sc">%&gt;%</span></span>
+<span id="cb51-14"><a href="#cb51-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">inner_join</span>(CountryTags, global_crisis_data, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"CC3"</span> <span class="ot">=</span> <span class="st">"Country.Code"</span>))</span>
+<span id="cb51-15"><a href="#cb51-15" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb51-16"><a href="#cb51-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rm</span>(global_crisis_data) <span class="co">#CLEANUP</span></span>
+<span id="cb51-17"><a href="#cb51-17" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb51-18"><a href="#cb51-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-19"><a href="#cb51-19" aria-hidden="true" tabindex="-1"></a>EU_crisis_dataset <span class="sc">%&gt;%</span></span>
+<span id="cb51-20"><a href="#cb51-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(Country, <span class="at">.keep_all =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb51-21"><a href="#cb51-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">6</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 8
+  CC3   Country  Year `Banking Crisis` `Systemic Crisis` `Gold Standard`
+  &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;            &lt;chr&gt;             &lt;chr&gt;          
+1 AUT   Austria  1880 0                0                 0              
+2 BEL   Belgium  1880 0                0                 1              
+3 FIN   Finland  1880 0                0                 1              
+4 FRA   France   1880 0                0                 1              
+5 DEU   Germany  1880 1                1                 1              
+6 GRC   Greece   1880 0                0                 0              
+# ℹ 2 more variables: `Currency Crises` &lt;chr&gt;, `Inflation Crises` &lt;chr&gt;</code></pre>
+</div>
+</div>
+<section id="tidy-up-numeric-in-share" class="level3">
+<h3 class="anchored" data-anchor-id="tidy-up-numeric-in-share">Tidy up numeric in SHARE</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>NA_counts <span class="ot">&lt;-</span> <span class="fu">colSums</span>(<span class="fu">is.na</span>(easySHARE_rel9_0_0))</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>NA_counts[NA_counts <span class="sc">&gt;</span> <span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>income_pct_w9 
+         1638 </code></pre>
+</div>
+</div>
+</section>
+<section id="impute-values-with-median" class="level3">
+<h3 class="anchored" data-anchor-id="impute-values-with-median">Impute Values with median</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>easySHARE_rel9_0_0<span class="sc">$</span>income_pct_w9[<span class="fu">is.na</span>(easySHARE_rel9_0_0<span class="sc">$</span>income_pct_w9)] <span class="ot">&lt;-</span> <span class="fu">median</span>(easySHARE_rel9_0_0<span class="sc">$</span>income_pct_w9, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>NA_counts <span class="ot">&lt;-</span> <span class="fu">colSums</span>(<span class="fu">is.na</span>(easySHARE_rel9_0_0))</span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>NA_counts[NA_counts <span class="sc">&gt;</span> <span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>named numeric(0)</code></pre>
+</div>
+</div>
+<p>Count number of participants with Big 5 personality trait answers</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(easySHARE_rel9_0_0)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       mergeid        hhid        coupleid wave wavepart int_version int_year
+1 AT-000327-01 AT-000327-A AT-000327-01-02    1       12           0     2004
+2 AT-000327-01 AT-000327-A AT-000327-01-02    2       12           1     2007
+3 AT-000327-02 AT-000327-A AT-000327-01-02    1       12           0     2004
+4 AT-000327-02 AT-000327-A AT-000327-01-02    2       12           1     2007
+5 AT-000674-01 AT-000674-A                    4      456           0     2011
+6 AT-000674-01 AT-000674-A                    5      456           1     2013
+  int_month country country_mod language female dn002_mod dn003_mod dn004_mod
+1         6      11          40       11      0         7      1952         1
+2         3      11          40       11      0         7      1952         1
+3         6      11          40       11      1         7      1955         1
+4         3      11          40       11      1         7      1955         1
+5        11      11          40       11      1         3      1952         1
+6        10      11          40       11      1         3      1952         1
+   age birth_country citizenship iv009_mod q34_re isced1997_r eduyears_mod
+1 51.9            40          40         4      2           3          -15
+2 54.7            40          40         5    -13           3           -3
+3 48.9            40          40         4      2           3            3
+4 51.7            40          40         5    -13           3            3
+5 59.7            40          40         4    -13           5            3
+6 61.6            40          40         4    -13           5            3
+  mar_stat hhsize partnerinhh int_partner age_partner gender_partner
+1        1      2           1           1        48.9              1
+2        1      2           1           1        51.7              1
+3        1      2           1           1        51.9              0
+4        1      2           1           1        54.7              0
+5        6      1           3          -9        -9.0             -9
+6        6      1           3          -9        -9.0             -9
+  mother_alive father_alive siblings_alive ch001_ ch021_mod ch007_hh ch007_km
+1            1            1             -9      4         2        1        1
+2            1            5             -9      4         2        1        1
+3            5            5              1      4         2        1        1
+4            5            5              1      4         2        1        1
+5            5            5             -9      2         1        5        5
+6            1            5             -9      2         3        5        5
+  sp002_mod sp003_1_mod sp003_2_mod sp003_3_mod sp008_ sp009_1_mod sp009_2_mod
+1         5          -9          -9          -9      5          -9          -9
+2         5          -9          -9          -9      5          -9          -9
+3         5          -9          -9          -9      1           4         -15
+4         5          -9          -9          -9      1          10           4
+5         5          -9          -9          -9      5          -9          -9
+6         5          -9          -9          -9      5          -9          -9
+  sp009_3_mod books_age10 maths_age10 language_age10 vaccinated
+1          -9         -13         -13            -13        -13
+2          -9         -13         -13            -13        -13
+3         -15         -13         -13            -13        -13
+4         -15         -13         -13            -13        -13
+5          -9         -13         -13            -13        -13
+6          -9           2           3              3          5
+  childhood_health sphus chronic_mod casp euro1 euro2 euro3 euro4 euro5 euro6
+1              -13     1           0   37     0     0     0     0     0     0
+2              -13     5           1   24     1     1     1     0     1     1
+3              -13     1           0   38     0     0     0     0     0     0
+4              -13     2           1   30     1     0     0     0     0     0
+5              -13     3           1   44     0     0     0     0     0     0
+6                2     3           2   45     0     0     0     0     0     0
+  euro7 euro8 euro9 euro10 euro11 euro12 eurod bfi10_extra_mod bfi10_agree_mod
+1     0     0     0      0      0      0     0             -13             -13
+2     0     1     1      0      1      1     9             -13             -13
+3     0     0     0      0      0      1     1             -13             -13
+4     0     1     0      0      0      1     3             -13             -13
+5     0     0     1      0      0      0     1             -13             -13
+6     0     0     0      0      0      0     0             -13             -13
+  bfi10_consc_mod bfi10_neuro_mod bfi10_open_mod hc002_mod hc012_ hc029_
+1             -13             -13            -13         3      5      5
+2             -13             -13            -13        20      1      5
+3             -13             -13            -13         2      5      5
+4             -13             -13            -13         6      5      5
+5             -13             -13            -13         2      5      5
+6             -13             -13            -13         2      5      5
+  maxgrip adlwa adla iadla iadlza mobilityind lgmuscle grossmotor finemotor
+1      45     0    0     0      0           0        0          0         0
+2      37     0    0     0      1           2        3          1         0
+3      42     0    0     0      0           0        0          0         0
+4      40     0    0     0      0           2        0          1         0
+5     -15     0    0     0      0           0        0          0         0
+6     -15     0    0     0      0           0        0          0         0
+  recall_1 recall_2 orienti numeracy_1 numeracy_2      bmi bmi2 smoking
+1        5        4       4          4        -13 32.78799    4       5
+2        7        7       4          5        -13 20.28123    2       5
+3        8        7       4          4        -13 31.16137    4       5
+4        8        7       4          5        -13 30.46112    4       5
+5        2        1       4          5          5 24.02381    2       5
+6        8        7     -15        -15          5 25.40282    3       5
+  ever_smoked br010_mod br015_ ep005_ ep009_mod ep011_mod ep013_mod ep026_mod
+1           5         4      2      2         2         2        40         2
+2           5         1      4      1        -9        -9        -9        -9
+3           5         2      3      2         2         2        40         2
+4           5         1      1      2         1         2        28         2
+5           5         5      1      2         3        -9        50         1
+6           5         5      1      1        -9        -9        -9        -9
+  ep036_mod co007_   thinc_m income_pct_w1 income_pct_w2 income_pct_w4
+1         1      2 28721.850             6           -13           -13
+2        -9      3 26432.822           -13             6           -13
+3         5      2 28721.850             6           -13           -13
+4         5      3 26432.822           -13             6           -13
+5         5      4  9167.821           -13           -13             1
+6        -9      4 14843.070           -13           -13           -13
+  income_pct_w5 income_pct_w6 income_pct_w7 income_pct_w8 income_pct_w9
+1           -13           -13           -13           -13           -13
+2           -13           -13           -13           -13           -13
+3           -13           -13           -13           -13           -13
+4           -13           -13           -13           -13           -13
+5           -13           -13           -13           -13           -13
+6             2           -13           -13           -13           -13</code></pre>
+</div>
+</div>
+<p>Looking at how many people have values for big five personality traits.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>citizens_with_bfp <span class="ot">&lt;-</span> easySHARE_rel9_0_0 <span class="sc">%&gt;%</span></span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(birth_country <span class="sc">%in%</span> citizenship <span class="sc">&amp;</span></span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>         birth_country <span class="sc">==</span> country_mod) <span class="sc">%&gt;%</span></span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(bfi10_extra_mod <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">&amp;</span></span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>         bfi10_agree_mod <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">&amp;</span></span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a>         bfi10_consc_mod <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">&amp;</span></span>
+<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a>         bfi10_neuro_mod <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">&amp;</span></span>
+<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a>         bfi10_open_mod <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb59-9"><a href="#cb59-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(mergeid, <span class="at">.keep_all =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb59-10"><a href="#cb59-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">count =</span> <span class="fu">n</span>())</span>
+<span id="cb59-11"><a href="#cb59-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-12"><a href="#cb59-12" aria-hidden="true" tabindex="-1"></a>citizens_with_bfp</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  count
+1 84424</code></pre>
+</div>
+</div>
+<p>We look at distinct people</p>
+</section>
+<section id="identify-citizens-in-share" class="level3">
+<h3 class="anchored" data-anchor-id="identify-citizens-in-share">Identify Citizens in SHARE</h3>
+<ul>
+<li><p>Birth country -&gt; Country born in.</p></li>
+<li><p>Citizenship -&gt; Current citizenships (can be multiple).</p></li>
+<li><p>Country Mod -&gt; Country as ISO Code.</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">exists</span>(<span class="st">"easySHARE_rel9_0_0"</span>)) {</span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>  citizens <span class="ot">&lt;-</span> easySHARE_rel9_0_0 <span class="sc">%&gt;%</span></span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(birth_country <span class="sc">%in%</span> citizenship <span class="sc">&amp;</span></span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>           birth_country <span class="sc">==</span> country_mod) <span class="sc">%&gt;%</span></span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(bfi10_extra_mod <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">&amp;</span></span>
+<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a>           bfi10_agree_mod <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">&amp;</span></span>
+<span id="cb61-7"><a href="#cb61-7" aria-hidden="true" tabindex="-1"></a>           bfi10_consc_mod <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">&amp;</span></span>
+<span id="cb61-8"><a href="#cb61-8" aria-hidden="true" tabindex="-1"></a>           bfi10_neuro_mod <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">&amp;</span></span>
+<span id="cb61-9"><a href="#cb61-9" aria-hidden="true" tabindex="-1"></a>           bfi10_open_mod <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb61-10"><a href="#cb61-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">distinct</span>(mergeid, <span class="at">.keep_all =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb61-11"><a href="#cb61-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(<span class="st">"mergeid"</span>,</span>
+<span id="cb61-12"><a href="#cb61-12" aria-hidden="true" tabindex="-1"></a>           <span class="st">"int_year"</span>,</span>
+<span id="cb61-13"><a href="#cb61-13" aria-hidden="true" tabindex="-1"></a>           <span class="st">"age"</span>,</span>
+<span id="cb61-14"><a href="#cb61-14" aria-hidden="true" tabindex="-1"></a>           <span class="st">"country_mod"</span>,</span>
+<span id="cb61-15"><a href="#cb61-15" aria-hidden="true" tabindex="-1"></a>           <span class="st">"female"</span>,</span>
+<span id="cb61-16"><a href="#cb61-16" aria-hidden="true" tabindex="-1"></a>           <span class="st">"bfi10_extra_mod"</span>,</span>
+<span id="cb61-17"><a href="#cb61-17" aria-hidden="true" tabindex="-1"></a>           <span class="st">"bfi10_agree_mod"</span>,</span>
+<span id="cb61-18"><a href="#cb61-18" aria-hidden="true" tabindex="-1"></a>           <span class="st">"bfi10_consc_mod"</span>,</span>
+<span id="cb61-19"><a href="#cb61-19" aria-hidden="true" tabindex="-1"></a>           <span class="st">"bfi10_neuro_mod"</span>,</span>
+<span id="cb61-20"><a href="#cb61-20" aria-hidden="true" tabindex="-1"></a>           <span class="st">"bfi10_open_mod"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb61-21"><a href="#cb61-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">birth_year =</span> int_year <span class="sc">-</span> age)</span>
+<span id="cb61-22"><a href="#cb61-22" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb61-23"><a href="#cb61-23" aria-hidden="true" tabindex="-1"></a>  citizens<span class="sc">$</span>country_mod <span class="ot">&lt;-</span> <span class="fu">countrycode</span>(citizens<span class="sc">$</span>country_mod, <span class="at">origin =</span> <span class="st">"iso3n"</span>, <span class="at">destination =</span> <span class="st">"iso3c"</span>)</span>
+<span id="cb61-24"><a href="#cb61-24" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb61-25"><a href="#cb61-25" aria-hidden="true" tabindex="-1"></a>  <span class="co">#rm(easySHARE_rel9_0_0)</span></span>
+<span id="cb61-26"><a href="#cb61-26" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb61-27"><a href="#cb61-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb61-28"><a href="#cb61-28" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(citizens)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        mergeid int_year  age country_mod female bfi10_extra_mod
+8  AT-000787-01     2022 58.4         AUT      0             2.0
+17 AT-001492-01     2017 65.6         AUT      1             5.0
+23 AT-001492-02     2017 65.8         AUT      0             3.5
+34 AT-001881-01     2017 87.2         AUT      1             4.0
+40 AT-001881-02     2017 92.8         AUT      0             3.0
+49 AT-002136-01     2017 65.7         AUT      0             5.0
+   bfi10_agree_mod bfi10_consc_mod bfi10_neuro_mod bfi10_open_mod birth_year
+8              3.0             4.5             1.5            5.0     1963.6
+17             3.5             3.5             4.5            3.5     1951.4
+23             5.0             5.0             1.0            3.0     1951.2
+34             4.0             4.5             3.0            3.5     1929.8
+40             4.0             3.5             2.0            2.5     1924.2
+49             3.0             3.0             3.0            4.5     1951.3</code></pre>
+</div>
+</div>
+</section>
+<section id="impute-crisis-data-with-0" class="level3">
+<h3 class="anchored" data-anchor-id="impute-crisis-data-with-0">Impute Crisis Data with 0</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>NA_counts <span class="ot">&lt;-</span> <span class="fu">colSums</span>(<span class="fu">is.na</span>(EU_crisis_dataset))</span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>NA_counts[NA_counts <span class="sc">&gt;</span> <span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Banking Crisis  Systemic Crisis    Gold Standard Inflation Crises 
+             294               11              411              202 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>EU_crisis_dataset<span class="sc">$</span><span class="st">`</span><span class="at">Banking Crisis</span><span class="st">`</span>[<span class="fu">is.na</span>(EU_crisis_dataset<span class="sc">$</span><span class="st">`</span><span class="at">Banking Crisis</span><span class="st">`</span>)] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>EU_crisis_dataset<span class="sc">$</span><span class="st">`</span><span class="at">Systemic Crisis</span><span class="st">`</span>[<span class="fu">is.na</span>(EU_crisis_dataset<span class="sc">$</span><span class="st">`</span><span class="at">Systemic Crisis</span><span class="st">`</span>)] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a>EU_crisis_dataset<span class="sc">$</span><span class="st">`</span><span class="at">Inflation Crises</span><span class="st">`</span>[<span class="fu">is.na</span>(EU_crisis_dataset<span class="sc">$</span><span class="st">`</span><span class="at">Inflation Crises</span><span class="st">`</span>)] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a>EU_crisis_dataset<span class="sc">$</span><span class="st">`</span><span class="at">Currency Crises</span><span class="st">`</span>[<span class="fu">is.na</span>(EU_crisis_dataset<span class="sc">$</span><span class="st">`</span><span class="at">Currency Crises</span><span class="st">`</span>)] <span class="ot">&lt;-</span> <span class="dv">0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>NA_counts <span class="ot">&lt;-</span> <span class="fu">colSums</span>(<span class="fu">is.na</span>(EU_crisis_dataset))</span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>NA_counts[NA_counts <span class="sc">&gt;</span> <span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Gold Standard 
+          411 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(EU_crisis_dataset)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 8
+  CC3   Country  Year `Banking Crisis` `Systemic Crisis` `Gold Standard`
+  &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;            &lt;chr&gt;             &lt;chr&gt;          
+1 AUT   Austria  1880 0                0                 0              
+2 AUT   Austria  1881 0                0                 0              
+3 AUT   Austria  1882 0                0                 0              
+4 AUT   Austria  1883 0                0                 0              
+5 AUT   Austria  1884 0                0                 0              
+6 AUT   Austria  1885 0                0                 0              
+# ℹ 2 more variables: `Currency Crises` &lt;chr&gt;, `Inflation Crises` &lt;chr&gt;</code></pre>
+</div>
+</div>
+</section>
+<section id="add-columns---influenced-by-recessions-at-times-in-their-lives" class="level2">
+<h2 class="anchored" data-anchor-id="add-columns---influenced-by-recessions-at-times-in-their-lives">Add columns - influenced by recessions at times in their lives</h2>
+<p>Add life ranges to share dataset</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>horizontal_crises <span class="ot">&lt;-</span> EU_crisis_dataset <span class="sc">%&gt;%</span></span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">c</span>(<span class="st">`</span><span class="at">Banking Crisis</span><span class="st">`</span>, <span class="st">`</span><span class="at">Currency Crises</span><span class="st">`</span>, <span class="st">`</span><span class="at">Inflation Crises</span><span class="st">`</span>), </span>
+<span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_to =</span> <span class="st">"Crisis_Type"</span>, </span>
+<span id="cb70-4"><a href="#cb70-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">values_to =</span> <span class="st">"Crisis_Flag"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb70-5"><a href="#cb70-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Crisis_Flag <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span>  <span class="co"># Keep only rows where the crisis occurred</span></span>
+<span id="cb70-6"><a href="#cb70-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(CC3, Crisis_Type) <span class="sc">%&gt;%</span></span>
+<span id="cb70-7"><a href="#cb70-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">Years =</span> <span class="fu">list</span>(Year), <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb70-8"><a href="#cb70-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> Crisis_Type, <span class="at">values_from =</span> Years)</span>
+<span id="cb70-9"><a href="#cb70-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb70-10"><a href="#cb70-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb70-11"><a href="#cb70-11" aria-hidden="true" tabindex="-1"></a>citizens <span class="ot">&lt;-</span> citizens <span class="sc">%&gt;%</span></span>
+<span id="cb70-12"><a href="#cb70-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb70-13"><a href="#cb70-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">range_birth =</span> <span class="fu">Map</span>(seq, birth_year <span class="sc">-</span> <span class="dv">7</span>, birth_year <span class="sc">+</span> <span class="dv">5</span>),</span>
+<span id="cb70-14"><a href="#cb70-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">range_childhood =</span> <span class="fu">Map</span>(seq, birth_year <span class="sc">+</span> <span class="dv">6</span>, birth_year <span class="sc">+</span> <span class="dv">10</span>),</span>
+<span id="cb70-15"><a href="#cb70-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">range_teenage =</span> <span class="fu">Map</span>(seq, birth_year <span class="sc">+</span> <span class="dv">11</span>, birth_year <span class="sc">+</span> <span class="dv">17</span>),</span>
+<span id="cb70-16"><a href="#cb70-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">range_early_adulthood =</span> <span class="fu">Map</span>(seq, birth_year <span class="sc">+</span> <span class="dv">18</span>, birth_year <span class="sc">+</span> <span class="dv">25</span>),</span>
+<span id="cb70-17"><a href="#cb70-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">range_middle_adulthood =</span> <span class="fu">Map</span>(seq, birth_year <span class="sc">+</span> <span class="dv">26</span>, birth_year <span class="sc">+</span> <span class="dv">35</span>),</span>
+<span id="cb70-18"><a href="#cb70-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">range_late_adulthood =</span> <span class="fu">Map</span>(seq, birth_year <span class="sc">+</span> <span class="dv">36</span>, birth_year <span class="sc">+</span> <span class="dv">45</span>)</span>
+<span id="cb70-19"><a href="#cb70-19" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb70-20"><a href="#cb70-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb70-21"><a href="#cb70-21" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">TODO</span><span class="co"> try analysis methods</span></span>
+<span id="cb70-22"><a href="#cb70-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb70-23"><a href="#cb70-23" aria-hidden="true" tabindex="-1"></a>matches <span class="ot">&lt;-</span> citizens <span class="sc">%&gt;%</span></span>
+<span id="cb70-24"><a href="#cb70-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(horizontal_crises, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"country_mod"</span> <span class="ot">=</span> <span class="st">"CC3"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb70-25"><a href="#cb70-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rowwise</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb70-26"><a href="#cb70-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb70-27"><a href="#cb70-27" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Banking crisis</span></span>
+<span id="cb70-28"><a href="#cb70-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">cr_banking_birth =</span> <span class="fu">as.integer</span>(<span class="fu">length</span>(<span class="fu">intersect</span>(<span class="fu">unlist</span>(range_birth),</span>
+<span id="cb70-29"><a href="#cb70-29" aria-hidden="true" tabindex="-1"></a>                                              <span class="fu">unlist</span>(<span class="st">`</span><span class="at">Banking Crisis</span><span class="st">`</span>))) <span class="sc">&gt;</span> <span class="dv">0</span>),</span>
+<span id="cb70-30"><a href="#cb70-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">cr_banking_teenage =</span> <span class="fu">as.integer</span>(<span class="fu">length</span>(<span class="fu">intersect</span>(<span class="fu">unlist</span>(range_teenage),</span>
+<span id="cb70-31"><a href="#cb70-31" aria-hidden="true" tabindex="-1"></a>                                                <span class="fu">unlist</span>(<span class="st">`</span><span class="at">Banking Crisis</span><span class="st">`</span>))) <span class="sc">&gt;</span> <span class="dv">0</span>),</span>
+<span id="cb70-32"><a href="#cb70-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">cr_banking_early_adulthood =</span> <span class="fu">as.integer</span>(<span class="fu">length</span>(<span class="fu">intersect</span>(<span class="fu">unlist</span>(range_early_adulthood),</span>
+<span id="cb70-33"><a href="#cb70-33" aria-hidden="true" tabindex="-1"></a>                                                        <span class="fu">unlist</span>(<span class="st">`</span><span class="at">Banking Crisis</span><span class="st">`</span>))) <span class="sc">&gt;</span> <span class="dv">0</span>),</span>
+<span id="cb70-34"><a href="#cb70-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">cr_banking_middle_adulthood =</span> <span class="fu">as.integer</span>(<span class="fu">length</span>(<span class="fu">intersect</span>(<span class="fu">unlist</span>(range_middle_adulthood),</span>
+<span id="cb70-35"><a href="#cb70-35" aria-hidden="true" tabindex="-1"></a>                                                  <span class="fu">unlist</span>(<span class="st">`</span><span class="at">Banking Crisis</span><span class="st">`</span>))) <span class="sc">&gt;</span> <span class="dv">0</span>),</span>
+<span id="cb70-36"><a href="#cb70-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">cr_banking_late_adulthood =</span> <span class="fu">as.integer</span>(<span class="fu">length</span>(<span class="fu">intersect</span>(<span class="fu">unlist</span>(range_late_adulthood),</span>
+<span id="cb70-37"><a href="#cb70-37" aria-hidden="true" tabindex="-1"></a>                                                  <span class="fu">unlist</span>(<span class="st">`</span><span class="at">Banking Crisis</span><span class="st">`</span>))) <span class="sc">&gt;</span> <span class="dv">0</span>),</span>
+<span id="cb70-38"><a href="#cb70-38" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Systematic crisis</span></span>
+<span id="cb70-39"><a href="#cb70-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">cr_system_birth =</span> <span class="fu">as.integer</span>(<span class="fu">length</span>(<span class="fu">intersect</span>(<span class="fu">unlist</span>(range_birth),</span>
+<span id="cb70-40"><a href="#cb70-40" aria-hidden="true" tabindex="-1"></a>                                              <span class="fu">unlist</span>(<span class="st">`</span><span class="at">Banking Crisis</span><span class="st">`</span>))) <span class="sc">&gt;</span> <span class="dv">0</span>),</span>
+<span id="cb70-41"><a href="#cb70-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">cr_system_teenage =</span> <span class="fu">as.integer</span>(<span class="fu">length</span>(<span class="fu">intersect</span>(<span class="fu">unlist</span>(range_teenage),</span>
+<span id="cb70-42"><a href="#cb70-42" aria-hidden="true" tabindex="-1"></a>                                                <span class="fu">unlist</span>(<span class="st">`</span><span class="at">Banking Crisis</span><span class="st">`</span>))) <span class="sc">&gt;</span> <span class="dv">0</span>),</span>
+<span id="cb70-43"><a href="#cb70-43" aria-hidden="true" tabindex="-1"></a>    <span class="at">cr_system_early_adulthood =</span> <span class="fu">as.integer</span>(<span class="fu">length</span>(<span class="fu">intersect</span>(<span class="fu">unlist</span>(range_early_adulthood),</span>
+<span id="cb70-44"><a href="#cb70-44" aria-hidden="true" tabindex="-1"></a>                                                        <span class="fu">unlist</span>(<span class="st">`</span><span class="at">Banking Crisis</span><span class="st">`</span>))) <span class="sc">&gt;</span> <span class="dv">0</span>),</span>
+<span id="cb70-45"><a href="#cb70-45" aria-hidden="true" tabindex="-1"></a>    <span class="at">cr_system_middle_adulthood =</span> <span class="fu">as.integer</span>(<span class="fu">length</span>(<span class="fu">intersect</span>(<span class="fu">unlist</span>(range_middle_adulthood),</span>
+<span id="cb70-46"><a href="#cb70-46" aria-hidden="true" tabindex="-1"></a>                                                  <span class="fu">unlist</span>(<span class="st">`</span><span class="at">Banking Crisis</span><span class="st">`</span>))) <span class="sc">&gt;</span> <span class="dv">0</span>),</span>
+<span id="cb70-47"><a href="#cb70-47" aria-hidden="true" tabindex="-1"></a>    <span class="at">cr_system_late_adulthood =</span> <span class="fu">as.integer</span>(<span class="fu">length</span>(<span class="fu">intersect</span>(<span class="fu">unlist</span>(range_late_adulthood),</span>
+<span id="cb70-48"><a href="#cb70-48" aria-hidden="true" tabindex="-1"></a>                                                  <span class="fu">unlist</span>(<span class="st">`</span><span class="at">Banking Crisis</span><span class="st">`</span>))) <span class="sc">&gt;</span> <span class="dv">0</span>),</span>
+<span id="cb70-49"><a href="#cb70-49" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Currency crisis</span></span>
+<span id="cb70-50"><a href="#cb70-50" aria-hidden="true" tabindex="-1"></a>    <span class="at">cr_currency_birth =</span> <span class="fu">as.integer</span>(<span class="fu">length</span>(<span class="fu">intersect</span>(<span class="fu">unlist</span>(range_birth),</span>
+<span id="cb70-51"><a href="#cb70-51" aria-hidden="true" tabindex="-1"></a>                                              <span class="fu">unlist</span>(<span class="st">`</span><span class="at">Currency Crises</span><span class="st">`</span>))) <span class="sc">&gt;</span> <span class="dv">0</span>),</span>
+<span id="cb70-52"><a href="#cb70-52" aria-hidden="true" tabindex="-1"></a>    <span class="at">cr_currency_teenage =</span> <span class="fu">as.integer</span>(<span class="fu">length</span>(<span class="fu">intersect</span>(<span class="fu">unlist</span>(range_teenage),</span>
+<span id="cb70-53"><a href="#cb70-53" aria-hidden="true" tabindex="-1"></a>                                                <span class="fu">unlist</span>(<span class="st">`</span><span class="at">Currency Crises</span><span class="st">`</span>))) <span class="sc">&gt;</span> <span class="dv">0</span>),</span>
+<span id="cb70-54"><a href="#cb70-54" aria-hidden="true" tabindex="-1"></a>    <span class="at">cr_currency_early_adulthood =</span> <span class="fu">as.integer</span>(<span class="fu">length</span>(<span class="fu">intersect</span>(<span class="fu">unlist</span>(range_early_adulthood),</span>
+<span id="cb70-55"><a href="#cb70-55" aria-hidden="true" tabindex="-1"></a>                                                        <span class="fu">unlist</span>(<span class="st">`</span><span class="at">Currency Crises</span><span class="st">`</span>))) <span class="sc">&gt;</span> <span class="dv">0</span>),</span>
+<span id="cb70-56"><a href="#cb70-56" aria-hidden="true" tabindex="-1"></a>    <span class="at">cr_currency_middle_adulthood =</span> <span class="fu">as.integer</span>(<span class="fu">length</span>(<span class="fu">intersect</span>(<span class="fu">unlist</span>(range_middle_adulthood),</span>
+<span id="cb70-57"><a href="#cb70-57" aria-hidden="true" tabindex="-1"></a>                                                  <span class="fu">unlist</span>(<span class="st">`</span><span class="at">Currency Crises</span><span class="st">`</span>))) <span class="sc">&gt;</span> <span class="dv">0</span>),</span>
+<span id="cb70-58"><a href="#cb70-58" aria-hidden="true" tabindex="-1"></a>    <span class="at">cr_currency_late_adulthood =</span> <span class="fu">as.integer</span>(<span class="fu">length</span>(<span class="fu">intersect</span>(<span class="fu">unlist</span>(range_late_adulthood),</span>
+<span id="cb70-59"><a href="#cb70-59" aria-hidden="true" tabindex="-1"></a>                                                  <span class="fu">unlist</span>(<span class="st">`</span><span class="at">Currency Crises</span><span class="st">`</span>))) <span class="sc">&gt;</span> <span class="dv">0</span>),</span>
+<span id="cb70-60"><a href="#cb70-60" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Inflation crisis</span></span>
+<span id="cb70-61"><a href="#cb70-61" aria-hidden="true" tabindex="-1"></a>    <span class="at">cr_inflation_birth =</span> <span class="fu">as.integer</span>(<span class="fu">length</span>(<span class="fu">intersect</span>(<span class="fu">unlist</span>(range_birth),</span>
+<span id="cb70-62"><a href="#cb70-62" aria-hidden="true" tabindex="-1"></a>                                              <span class="fu">unlist</span>(<span class="st">`</span><span class="at">Inflation Crises</span><span class="st">`</span>))) <span class="sc">&gt;</span> <span class="dv">0</span>),</span>
+<span id="cb70-63"><a href="#cb70-63" aria-hidden="true" tabindex="-1"></a>    <span class="at">cr_inflation_teenage =</span> <span class="fu">as.integer</span>(<span class="fu">length</span>(<span class="fu">intersect</span>(<span class="fu">unlist</span>(range_teenage),</span>
+<span id="cb70-64"><a href="#cb70-64" aria-hidden="true" tabindex="-1"></a>                                                <span class="fu">unlist</span>(<span class="st">`</span><span class="at">Inflation Crises</span><span class="st">`</span>))) <span class="sc">&gt;</span> <span class="dv">0</span>),</span>
+<span id="cb70-65"><a href="#cb70-65" aria-hidden="true" tabindex="-1"></a>    <span class="at">cr_inflation_early_adulthood =</span> <span class="fu">as.integer</span>(<span class="fu">length</span>(<span class="fu">intersect</span>(<span class="fu">unlist</span>(range_early_adulthood),</span>
+<span id="cb70-66"><a href="#cb70-66" aria-hidden="true" tabindex="-1"></a>                                                        <span class="fu">unlist</span>(<span class="st">`</span><span class="at">Inflation Crises</span><span class="st">`</span>))) <span class="sc">&gt;</span> <span class="dv">0</span>),</span>
+<span id="cb70-67"><a href="#cb70-67" aria-hidden="true" tabindex="-1"></a>    <span class="at">cr_inflation_middle_adulthood =</span> <span class="fu">as.integer</span>(<span class="fu">length</span>(<span class="fu">intersect</span>(<span class="fu">unlist</span>(range_middle_adulthood),</span>
+<span id="cb70-68"><a href="#cb70-68" aria-hidden="true" tabindex="-1"></a>                                                  <span class="fu">unlist</span>(<span class="st">`</span><span class="at">Inflation Crises</span><span class="st">`</span>))) <span class="sc">&gt;</span> <span class="dv">0</span>),</span>
+<span id="cb70-69"><a href="#cb70-69" aria-hidden="true" tabindex="-1"></a>    <span class="at">cr_inflation_late_adulthood =</span> <span class="fu">as.integer</span>(<span class="fu">length</span>(<span class="fu">intersect</span>(<span class="fu">unlist</span>(range_late_adulthood),</span>
+<span id="cb70-70"><a href="#cb70-70" aria-hidden="true" tabindex="-1"></a>                                                  <span class="fu">unlist</span>(<span class="st">`</span><span class="at">Inflation Crises</span><span class="st">`</span>))) <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb70-71"><a href="#cb70-71" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb70-72"><a href="#cb70-72" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb70-73"><a href="#cb70-73" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb70-74"><a href="#cb70-74" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(mergeid,</span>
+<span id="cb70-75"><a href="#cb70-75" aria-hidden="true" tabindex="-1"></a>         int_year,</span>
+<span id="cb70-76"><a href="#cb70-76" aria-hidden="true" tabindex="-1"></a>         age,</span>
+<span id="cb70-77"><a href="#cb70-77" aria-hidden="true" tabindex="-1"></a>         country_mod,</span>
+<span id="cb70-78"><a href="#cb70-78" aria-hidden="true" tabindex="-1"></a>         female,</span>
+<span id="cb70-79"><a href="#cb70-79" aria-hidden="true" tabindex="-1"></a>         bfi10_extra_mod,</span>
+<span id="cb70-80"><a href="#cb70-80" aria-hidden="true" tabindex="-1"></a>         bfi10_agree_mod,</span>
+<span id="cb70-81"><a href="#cb70-81" aria-hidden="true" tabindex="-1"></a>         bfi10_consc_mod,</span>
+<span id="cb70-82"><a href="#cb70-82" aria-hidden="true" tabindex="-1"></a>         bfi10_neuro_mod,</span>
+<span id="cb70-83"><a href="#cb70-83" aria-hidden="true" tabindex="-1"></a>         bfi10_open_mod,</span>
+<span id="cb70-84"><a href="#cb70-84" aria-hidden="true" tabindex="-1"></a>         <span class="co"># Banking</span></span>
+<span id="cb70-85"><a href="#cb70-85" aria-hidden="true" tabindex="-1"></a>         cr_banking_birth,</span>
+<span id="cb70-86"><a href="#cb70-86" aria-hidden="true" tabindex="-1"></a>         cr_banking_teenage,</span>
+<span id="cb70-87"><a href="#cb70-87" aria-hidden="true" tabindex="-1"></a>         cr_banking_early_adulthood,</span>
+<span id="cb70-88"><a href="#cb70-88" aria-hidden="true" tabindex="-1"></a>         cr_banking_middle_adulthood,</span>
+<span id="cb70-89"><a href="#cb70-89" aria-hidden="true" tabindex="-1"></a>         cr_banking_late_adulthood,</span>
+<span id="cb70-90"><a href="#cb70-90" aria-hidden="true" tabindex="-1"></a>         <span class="co"># System</span></span>
+<span id="cb70-91"><a href="#cb70-91" aria-hidden="true" tabindex="-1"></a>         cr_system_birth,</span>
+<span id="cb70-92"><a href="#cb70-92" aria-hidden="true" tabindex="-1"></a>         cr_system_teenage,</span>
+<span id="cb70-93"><a href="#cb70-93" aria-hidden="true" tabindex="-1"></a>         cr_system_early_adulthood,</span>
+<span id="cb70-94"><a href="#cb70-94" aria-hidden="true" tabindex="-1"></a>         cr_system_middle_adulthood,</span>
+<span id="cb70-95"><a href="#cb70-95" aria-hidden="true" tabindex="-1"></a>         cr_system_late_adulthood,</span>
+<span id="cb70-96"><a href="#cb70-96" aria-hidden="true" tabindex="-1"></a>         <span class="co"># Currency</span></span>
+<span id="cb70-97"><a href="#cb70-97" aria-hidden="true" tabindex="-1"></a>         cr_currency_birth,</span>
+<span id="cb70-98"><a href="#cb70-98" aria-hidden="true" tabindex="-1"></a>         cr_currency_teenage,</span>
+<span id="cb70-99"><a href="#cb70-99" aria-hidden="true" tabindex="-1"></a>         cr_currency_early_adulthood,</span>
+<span id="cb70-100"><a href="#cb70-100" aria-hidden="true" tabindex="-1"></a>         cr_currency_middle_adulthood,</span>
+<span id="cb70-101"><a href="#cb70-101" aria-hidden="true" tabindex="-1"></a>         cr_currency_late_adulthood,</span>
+<span id="cb70-102"><a href="#cb70-102" aria-hidden="true" tabindex="-1"></a>         <span class="co"># Inflation</span></span>
+<span id="cb70-103"><a href="#cb70-103" aria-hidden="true" tabindex="-1"></a>         cr_inflation_birth,</span>
+<span id="cb70-104"><a href="#cb70-104" aria-hidden="true" tabindex="-1"></a>         cr_inflation_teenage,</span>
+<span id="cb70-105"><a href="#cb70-105" aria-hidden="true" tabindex="-1"></a>         cr_inflation_early_adulthood,</span>
+<span id="cb70-106"><a href="#cb70-106" aria-hidden="true" tabindex="-1"></a>         cr_inflation_middle_adulthood,</span>
+<span id="cb70-107"><a href="#cb70-107" aria-hidden="true" tabindex="-1"></a>         cr_inflation_late_adulthood)</span>
+<span id="cb70-108"><a href="#cb70-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb70-109"><a href="#cb70-109" aria-hidden="true" tabindex="-1"></a>match_for_matrix <span class="ot">&lt;-</span> matches <span class="sc">%&gt;%</span></span>
+<span id="cb70-110"><a href="#cb70-110" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(int_year,</span>
+<span id="cb70-111"><a href="#cb70-111" aria-hidden="true" tabindex="-1"></a>         age,</span>
+<span id="cb70-112"><a href="#cb70-112" aria-hidden="true" tabindex="-1"></a>         female,</span>
+<span id="cb70-113"><a href="#cb70-113" aria-hidden="true" tabindex="-1"></a>         bfi10_extra_mod,</span>
+<span id="cb70-114"><a href="#cb70-114" aria-hidden="true" tabindex="-1"></a>         bfi10_agree_mod,</span>
+<span id="cb70-115"><a href="#cb70-115" aria-hidden="true" tabindex="-1"></a>         bfi10_consc_mod,</span>
+<span id="cb70-116"><a href="#cb70-116" aria-hidden="true" tabindex="-1"></a>         bfi10_neuro_mod,</span>
+<span id="cb70-117"><a href="#cb70-117" aria-hidden="true" tabindex="-1"></a>         bfi10_open_mod,</span>
+<span id="cb70-118"><a href="#cb70-118" aria-hidden="true" tabindex="-1"></a>         <span class="co"># Banking</span></span>
+<span id="cb70-119"><a href="#cb70-119" aria-hidden="true" tabindex="-1"></a>         cr_banking_birth,</span>
+<span id="cb70-120"><a href="#cb70-120" aria-hidden="true" tabindex="-1"></a>         cr_banking_teenage,</span>
+<span id="cb70-121"><a href="#cb70-121" aria-hidden="true" tabindex="-1"></a>         cr_banking_early_adulthood,</span>
+<span id="cb70-122"><a href="#cb70-122" aria-hidden="true" tabindex="-1"></a>         cr_banking_middle_adulthood,</span>
+<span id="cb70-123"><a href="#cb70-123" aria-hidden="true" tabindex="-1"></a>         cr_banking_late_adulthood,</span>
+<span id="cb70-124"><a href="#cb70-124" aria-hidden="true" tabindex="-1"></a>         <span class="co"># System</span></span>
+<span id="cb70-125"><a href="#cb70-125" aria-hidden="true" tabindex="-1"></a>         cr_system_birth,</span>
+<span id="cb70-126"><a href="#cb70-126" aria-hidden="true" tabindex="-1"></a>         cr_system_teenage,</span>
+<span id="cb70-127"><a href="#cb70-127" aria-hidden="true" tabindex="-1"></a>         cr_system_early_adulthood,</span>
+<span id="cb70-128"><a href="#cb70-128" aria-hidden="true" tabindex="-1"></a>         cr_system_middle_adulthood,</span>
+<span id="cb70-129"><a href="#cb70-129" aria-hidden="true" tabindex="-1"></a>         cr_system_late_adulthood,</span>
+<span id="cb70-130"><a href="#cb70-130" aria-hidden="true" tabindex="-1"></a>         <span class="co"># Currency</span></span>
+<span id="cb70-131"><a href="#cb70-131" aria-hidden="true" tabindex="-1"></a>         cr_currency_birth,</span>
+<span id="cb70-132"><a href="#cb70-132" aria-hidden="true" tabindex="-1"></a>         cr_currency_teenage,</span>
+<span id="cb70-133"><a href="#cb70-133" aria-hidden="true" tabindex="-1"></a>         cr_currency_early_adulthood,</span>
+<span id="cb70-134"><a href="#cb70-134" aria-hidden="true" tabindex="-1"></a>         cr_currency_middle_adulthood,</span>
+<span id="cb70-135"><a href="#cb70-135" aria-hidden="true" tabindex="-1"></a>         cr_currency_late_adulthood,</span>
+<span id="cb70-136"><a href="#cb70-136" aria-hidden="true" tabindex="-1"></a>         <span class="co"># Inflation</span></span>
+<span id="cb70-137"><a href="#cb70-137" aria-hidden="true" tabindex="-1"></a>         cr_inflation_birth,</span>
+<span id="cb70-138"><a href="#cb70-138" aria-hidden="true" tabindex="-1"></a>         cr_inflation_teenage,</span>
+<span id="cb70-139"><a href="#cb70-139" aria-hidden="true" tabindex="-1"></a>         cr_inflation_early_adulthood,</span>
+<span id="cb70-140"><a href="#cb70-140" aria-hidden="true" tabindex="-1"></a>         cr_inflation_middle_adulthood,</span>
+<span id="cb70-141"><a href="#cb70-141" aria-hidden="true" tabindex="-1"></a>         cr_inflation_late_adulthood)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now these can be analyzed for the impact of recessions during times in their lives.</p>
+</section>
+</section>
+<section id="plotting" class="level1">
+<h1>Plotting</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>correlation_matrix <span class="ot">&lt;-</span> <span class="fu">cor</span>(match_for_matrix, <span class="at">use =</span> <span class="st">"pairwise.complete.obs"</span>)</span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a><span class="fu">View</span>(correlation_matrix)</span>
+<span id="cb71-4"><a href="#cb71-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb71-5"><a href="#cb71-5" aria-hidden="true" tabindex="-1"></a><span class="fu">png</span>(<span class="st">"correlation_plot_new.png"</span>, <span class="at">width =</span> <span class="dv">2800</span>, <span class="at">height =</span> <span class="dv">2800</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="fu">corrplot</span>(correlation_matrix, <span class="at">method =</span> <span class="st">"color"</span>, <span class="at">tl.col =</span> <span class="st">"black"</span>, <span class="at">tl.srt =</span> <span class="dv">45</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="RMKAgeing_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><p><strong>Pairplots/Scatterplot Matrix</strong>: Visualize relationships between features.</p></li>
+<li><p><strong>Principal Component Analysis (PCA)</strong>: Reduce dimensionality and find key components.</p></li>
+<li><p><strong>Mutual Information</strong>: Measure dependency between variables.</p></li>
+<li><p><strong>Feature Importance</strong>: Use models like Random Forests to determine feature relevance.</p></li>
+<li><p><strong>Clustering (e.g., k-means, DBSCAN)</strong>: Identify patterns or groupings.</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a>scaled_data <span class="ot">=</span> <span class="fu">scale</span>(correlation_matrix)</span>
+<span id="cb73-4"><a href="#cb73-4" aria-hidden="true" tabindex="-1"></a>pca <span class="ot">&lt;-</span> <span class="fu">prcomp</span>(scaled_data)</span>
+<span id="cb73-5"><a href="#cb73-5" aria-hidden="true" tabindex="-1"></a>pca_data <span class="ot">&lt;-</span> pca<span class="sc">$</span>x[, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]  <span class="co"># Keep the first two components</span></span>
+<span id="cb73-6"><a href="#cb73-6" aria-hidden="true" tabindex="-1"></a>kmeans_result <span class="ot">&lt;-</span> <span class="fu">kmeans</span>(pca_data, <span class="at">centers =</span> <span class="dv">3</span>)</span>
+<span id="cb73-7"><a href="#cb73-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-8"><a href="#cb73-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize PCA-based clustering</span></span>
+<span id="cb73-9"><a href="#cb73-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(pca_data, <span class="at">col =</span> kmeans_result<span class="sc">$</span>cluster, <span class="at">pch =</span> <span class="dv">16</span>, <span class="at">main =</span> <span class="st">"K-means Clustering with PCA"</span>)</span>
+<span id="cb73-10"><a href="#cb73-10" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(kmeans_result<span class="sc">$</span>centers, <span class="at">col =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="at">pch =</span> <span class="dv">8</span>, <span class="at">cex =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="RMKAgeing_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><strong>Heatmaps</strong>: Visualize patterns or distributions in data.</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="fu">heatmap</span>(correlation_matrix, <span class="at">main =</span> <span class="st">"Basic Heatmap"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="RMKAgeing_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><p><strong>ANOVA or t-tests</strong>: Assess differences between groups.</p></li>
+<li><p><strong>Partial Correlation</strong>: Control for confounding variables.</p></li>
+</ul>
+<!-- -->
+<ul>
+<li><p><strong>Time Series Analysis</strong>: Study trends, seasonality, and cyclic behavior.</p></li>
+<li><p><strong>Residual Plots</strong>: Evaluate relationships and detect non-linear patterns.</p></li>
+</ul>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
