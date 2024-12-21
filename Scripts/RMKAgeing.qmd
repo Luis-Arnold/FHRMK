@@ -163,6 +163,8 @@ NA_counts[NA_counts > 0]
 
 ### Impute Values with median
 
+Using median instead of median to reduce impact of outliers.
+
 ```{r}
 
 easySHARE_rel9_0_0$income_pct_w9[is.na(easySHARE_rel9_0_0$income_pct_w9)] <- median(easySHARE_rel9_0_0$income_pct_w9, na.rm = TRUE)
@@ -239,6 +241,8 @@ head(citizens)
 ```
 
 ### Impute Crisis Data with 0
+
+We impute with 0 in the crisis data, to not introduce fictional crises.
 
 ```{r}
 NA_counts <- colSums(is.na(EU_crisis_dataset))
@@ -460,7 +464,9 @@ points(kmeans_result$centers, col = 1:3, pch = 8, cex = 2)
 heatmap(correlation_matrix, main = "Basic Heatmap")
 ```
 
--   **ANOVA or t-tests**: Assess differences between groups.
+Mann-Whitney-U_test
+
+-   **#ANOVA or t-tests**: Assess differences between groups.
 
 -   **Partial Correlation**: Control for confounding variables.
 
