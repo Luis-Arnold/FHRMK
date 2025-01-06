@@ -76,6 +76,8 @@ library(parallel)
 library(xgboost)
 library(readxl)
 library(countrycode)
+library(rpart)
+library(rpart.plot)
 ```
 
 ### Load Dataset
@@ -475,3 +477,101 @@ Mann-Whitney-U_test
 -   **Time Series Analysis**: Study trends, seasonality, and cyclic behavior.
 
 -   **Residual Plots**: Evaluate relationships and detect non-linear patterns.
+
+train a tree model with labels as output and see what it spits out.
+
+```{r}
+
+head(matches)
+```
+
+```{r}
+
+library(rpart)
+```
+
+```{r}
+
+sampledata = matches[sample(nrow(matches), 15000), ]
+
+sampledata = na.omit(sampledata)
+
+sampledata <- sampledata[, c("bfi10_consc_mod",
+                             "bfi10_extra_mod",
+                             "bfi10_agree_mod",
+                             "bfi10_neuro_mod",
+                             "bfi10_open_mod",
+                             "age",
+                             "female",
+                             # Banking
+                             "cr_banking_birth",
+                             "cr_banking_teenage",
+                             "cr_banking_early_adulthood",
+                             "cr_banking_middle_adulthood",
+                             "cr_banking_late_adulthood",
+                             # System
+                             "cr_system_birth",
+                             "cr_system_teenage",
+                             "cr_system_early_adulthood",
+                             "cr_system_middle_adulthood",
+                             "cr_system_late_adulthood",
+                             # Currency
+                             "cr_currency_birth",
+                             "cr_currency_teenage",
+                             "cr_currency_early_adulthood",
+                             "cr_currency_middle_adulthood",
+                             "cr_currency_late_adulthood",
+                             # Inflation
+                             "cr_inflation_birth",
+                             "cr_inflation_teenage",
+                             "cr_inflation_early_adulthood",
+                             "cr_inflation_middle_adulthood",
+                             "cr_inflation_late_adulthood")]
+
+
+control <- rpart.control(
+  maxdepth = 10,
+  minsplit = 50,   # Increase to avoid too many splits
+  cp = 0.01        # Prune the tree more aggressively
+)
+
+```
+
+```{r}
+
+treeModel <- rpart(bfi10_consc_mod ~ ., data = sampledata, method = "class", control = control)
+```
+
+```{r}
+
+print(treeModel)
+
+```
+
+Having a hard time making the tree pick anything other than country.
+
+```{r}
+
+rpart.plot(treeModel)
+```
+
+```{r}
+
+subsetData <- subset(matches, cr_banking_teenage %in% c(0, 1))
+
+wilcox.test(bfi10_extra_mod ~ cr_banking_teenage, data = subsetData)
+```
+
+This suggests that extroversion does not significantly differ when experiencing a banking crisis in teenage years
+
+```{r}
+
+traits <- c("bfi10_extra_mod", "bfi10_agree_mod", "bfi10_consc_mod", "bfi10_neuro_mod", "bfi10_open_mod")
+for (trait in traits) {
+  cat("Testing", trait, ":\n")
+  print(wilcox.test(matches[[trait]] ~ matches$cr_inflation_teenage))
+  cat("\n")
+}
+```
+
+With p-value = 2.204e-08 for cr_inflation_teenage and bfi10_extra_mod - this combination shows a statistical significance of the impact of inflation during teenage years on the extroversion of a person.
