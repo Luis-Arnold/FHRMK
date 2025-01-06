@@ -492,9 +492,9 @@ library(rpart)
 
 ```{r}
 
-sampledata = matches[sample(nrow(matches), 15000), ]
+sampledata = matches[sample(nrow(matches), 40000), ]
 
-sampledata = na.omit(sampledata)
+sampledata = na.omit(matches)
 
 sampledata <- sampledata[, c("bfi10_consc_mod",
                              "bfi10_extra_mod",
@@ -526,11 +526,10 @@ sampledata <- sampledata[, c("bfi10_consc_mod",
                              "cr_inflation_teenage",
                              "cr_inflation_early_adulthood",
                              "cr_inflation_middle_adulthood",
-                             "cr_inflation_late_adulthood")]
-
+                             "cr_inflation_late_adulthood")]<
 
 control <- rpart.control(
-  maxdepth = 10,
+  maxdepth = 15,
   minsplit = 50,   # Increase to avoid too many splits
   cp = 0.01        # Prune the tree more aggressively
 )
