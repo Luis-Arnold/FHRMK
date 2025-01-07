@@ -488,6 +488,9 @@ head(matches)
 ```{r}
 
 library(rpart)
+library(broom)
+library(dplyr)
+library(ggplot2)
 ```
 
 ```{r}
@@ -556,6 +559,29 @@ rpart.plot(treeModel)
 
 ```{r}
 
+library(randomForest)
+
+forestModel <- randomForest(
+  bfi10_consc_mod ~ .,
+  data = sampledata,
+  ntree = 100,
+  mtry = sqrt(ncol(sampledata) - 1),
+  importance = TRUE
+)
+
+print(forestModel)
+
+```
+
+```{r}
+
+varImpPlot(forestModel)
+```
+
+# Wilcoxon test
+
+```{r}
+
 subsetData <- subset(matches, cr_banking_teenage %in% c(0, 1))
 
 wilcox.test(bfi10_extra_mod ~ cr_banking_teenage, data = subsetData)
@@ -565,7 +591,11 @@ This suggests that extroversion does not significantly differ when experiencing 
 
 ```{r}
 
-traits <- c("bfi10_extra_mod", "bfi10_agree_mod", "bfi10_consc_mod", "bfi10_neuro_mod", "bfi10_open_mod")
+traits <- c("bfi10_extra_mod",
+            "bfi10_agree_mod",
+            "bfi10_consc_mod",
+            "bfi10_neuro_mod",
+            "bfi10_open_mod")
 for (trait in traits) {
   cat("Testing", trait, ":\n")
   print(wilcox.test(matches[[trait]] ~ matches$cr_inflation_teenage))
@@ -574,3 +604,108 @@ for (trait in traits) {
 ```
 
 With p-value = 2.204e-08 for cr_inflation_teenage and bfi10_extra_mod - this combination shows a statistical significance of the impact of inflation during teenage years on the extroversion of a person.
+
+```{r}
+
+traits <- c("bfi10_extra_mod",
+            "bfi10_agree_mod",
+            "bfi10_consc_mod", 
+            "bfi10_neuro_mod",
+            "bfi10_open_mod")
+inflationVars <- c("cr_banking_birth",
+                   "cr_banking_teenage",
+                   "cr_banking_early_adulthood",
+                   "cr_banking_middle_adulthood",
+                   "cr_banking_late_adulthood",
+                   # System
+                   "cr_system_birth",
+                   "cr_system_teenage",
+                   "cr_system_early_adulthood",
+                   "cr_system_middle_adulthood",
+                   "cr_system_late_adulthood",
+                   # Currency
+                   "cr_currency_birth",
+                   "cr_currency_teenage",
+                   "cr_currency_early_adulthood",
+                   "cr_currency_middle_adulthood",
+                   "cr_currency_late_adulthood",
+                   # Inflation
+                   "cr_inflation_birth",
+                   "cr_inflation_teenage",
+                   "cr_inflation_early_adulthood",
+                   "cr_inflation_middle_adulthood",
+                   "cr_inflation_late_adulthood")
+
+results <- data.frame(
+  trait = character(),
+  inflationVar = character(),
+  statistic = numeric(),
+  pValue = numeric(),
+  method = character(),
+  alternative = character(),
+  stringsAsFactors = FALSE
+)
+
+for (trait in traits) {
+  for (inflVar in inflationVars) {
+    w <- wilcox.test(matches[[trait]] ~ matches[[inflVar]])
+    tidyW <- tidy(w)
+    # Add columns to store trait & variable
+    tidyW$trait <- trait
+    tidyW$inflationVar <- inflVar
+    results <- rbind(results, tidyW)
+  }
+}
+
+results
+
+```
+
+```{r}
+
+traitLabels <- c(
+  "bfi10_extra_mod" = "Extraver.",
+  "bfi10_agree_mod" = "Agreeable.",
+  "bfi10_consc_mod" = "Conscient.",
+  "bfi10_neuro_mod" = "Neuroticism",
+  "bfi10_open_mod"  = "Openness"
+)
+
+customOrder <- c("cr_banking_birth",
+                 "cr_banking_teenage",
+                 "cr_banking_early_adulthood",
+                 "cr_banking_middle_adulthood",
+                 "cr_banking_late_adulthood",
+                 # System
+                 "cr_system_birth",
+                 "cr_system_teenage",
+                 "cr_system_early_adulthood",
+                 "cr_system_middle_adulthood",
+                 "cr_system_late_adulthood",
+                 # Currency
+                 "cr_currency_birth",
+                 "cr_currency_teenage",
+                 "cr_currency_early_adulthood",
+                 "cr_currency_middle_adulthood",
+                 "cr_currency_late_adulthood",
+                 # Inflation
+                 "cr_inflation_birth",
+                 "cr_inflation_teenage",
+                 "cr_inflation_early_adulthood",
+                 "cr_inflation_middle_adulthood",
+                 "cr_inflation_late_adulthood")
+
+results_relevant <- results %>% 
+  mutate(significant = p.value < 0.05)
+
+results_relevant <- results_relevant %>%
+  mutate(inflationVar = factor(inflationVar, levels = customOrder))
+
+ggplot(results_relevant, aes(x = trait, y = inflationVar, fill = significant)) +
+  geom_tile(color = "white") +
+  scale_fill_manual(values = c("TRUE" = "green", "FALSE" = "gray")) +
+  scale_x_discrete(labels = traitLabels) +
+  labs(title = "Significance Heatmap",
+       x = "Big 5 Personality Trait",
+       y = "Crisis Variables")
+```
