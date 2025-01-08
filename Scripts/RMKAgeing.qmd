@@ -421,6 +421,7 @@ Now these can be analyzed for the impact of recessions during times in their liv
 # Plotting
 
 ```{r}
+
 correlation_matrix <- cor(match_for_matrix, use = "pairwise.complete.obs")
 
 View(correlation_matrix)
@@ -432,6 +433,56 @@ png("correlation_plot_new.png", width = 2800, height = 2800)
 
 corrplot(correlation_matrix, method = "color", tl.col = "black", tl.srt = 45)
 
+```
+
+```{r}
+
+sample_matrix = match_for_matrix[sample(nrow(match_for_matrix), 40000), ]
+
+sample_matrix = na.omit(sample_matrix)
+
+sample_matrix <- sample_matrix[, c("bfi10_consc_mod",
+                                   "bfi10_extra_mod",
+                                   "bfi10_agree_mod",
+                                   "bfi10_neuro_mod",
+                                   "bfi10_open_mod",
+                                   "age",
+                                   "female",
+                                   # Banking
+                                   "cr_banking_birth",
+                                   "cr_banking_teenage",
+                                   "cr_banking_early_adulthood",
+                                   "cr_banking_middle_adulthood",
+                                   "cr_banking_late_adulthood",
+                                   # System
+                                   #"cr_system_birth",
+                                   #"cr_system_teenage",
+                                   #"cr_system_early_adulthood",
+                                   #"cr_system_middle_adulthood",
+                                   #"cr_system_late_adulthood",
+                                   # Currency
+                                   "cr_currency_birth",
+                                   "cr_currency_teenage",
+                                   "cr_currency_early_adulthood",
+                                   "cr_currency_middle_adulthood",
+                                   "cr_currency_late_adulthood",
+                                   # Inflation
+                                   "cr_inflation_birth",
+                                   "cr_inflation_teenage",
+                                   "cr_inflation_early_adulthood",
+                                   "cr_inflation_middle_adulthood",
+                                   "cr_inflation_late_adulthood")]
+
+sample_correlation_matrix <- cor(sample_matrix, use = "pairwise.complete.obs")
+
+#View(correlation_matrix)
+
+png("correlation_plot_new.png", width = 2800, height = 2800)
+```
+
+```{r}
+
+corrplot(sample_correlation_matrix, method = "color", tl.col = "black", tl.srt = 45)
 ```
 
 -   **Pairplots/Scatterplot Matrix**: Visualize relationships between features.
@@ -463,7 +514,7 @@ points(kmeans_result$centers, col = 1:3, pch = 8, cex = 2)
 
 ```{r}
 
-heatmap(correlation_matrix, main = "Basic Heatmap")
+heatmap(sample_correlation_matrix, main = "Basic Heatmap")
 ```
 
 Mann-Whitney-U_test
@@ -499,11 +550,11 @@ sampledata = matches[sample(nrow(matches), 40000), ]
 
 sampledata = na.omit(matches)
 
-sampledata <- sampledata[, c("bfi10_consc_mod",
+sampledata <- sampledata[, c(#"bfi10_consc_mod",
                              "bfi10_extra_mod",
-                             "bfi10_agree_mod",
-                             "bfi10_neuro_mod",
-                             "bfi10_open_mod",
+                             #"bfi10_agree_mod",
+                             #"bfi10_neuro_mod",
+                             #"bfi10_open_mod",
                              "age",
                              "female",
                              # Banking
@@ -529,7 +580,7 @@ sampledata <- sampledata[, c("bfi10_consc_mod",
                              "cr_inflation_teenage",
                              "cr_inflation_early_adulthood",
                              "cr_inflation_middle_adulthood",
-                             "cr_inflation_late_adulthood")]<
+                             "cr_inflation_late_adulthood")]
 
 control <- rpart.control(
   maxdepth = 15,
@@ -562,9 +613,9 @@ rpart.plot(treeModel)
 library(randomForest)
 
 forestModel <- randomForest(
-  bfi10_consc_mod ~ .,
+  bfi10_extra_mod ~ .,
   data = sampledata,
-  ntree = 100,
+  ntree = 500,
   mtry = sqrt(ncol(sampledata) - 1),
   importance = TRUE
 )
@@ -576,7 +627,10 @@ print(forestModel)
 ```{r}
 
 varImpPlot(forestModel)
+
 ```
+
+High %IncMSE - the variable is crucial for model accuracy.
 
 # Wilcoxon test
 
@@ -696,7 +750,7 @@ customOrder <- c("cr_banking_birth",
                  "cr_inflation_late_adulthood")
 
 results_relevant <- results %>% 
-  mutate(significant = p.value < 0.05)
+  mutate(significant = p.value < 0.01)
 
 results_relevant <- results_relevant %>%
   mutate(inflationVar = factor(inflationVar, levels = customOrder))
